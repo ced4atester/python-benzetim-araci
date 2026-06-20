@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python Benzetim Sorusu Üretici</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: #f0f4f8;
+    color: #2d3748;
+    min-height: 100vh;
+    padding: 2rem 1rem;
+  }
+  .container { max-width: 860px; margin: 0 auto; }
+
+  .header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  .header h1 {
+    font-size: 1.55rem;
+    font-weight: 700;
+    color: #1a365d;
+    line-height: 1.4;
+  }
+  .header p {
+    font-size: 0.92rem;
+    color: #718096;
+    margin-top: 0.4rem;
+  }
+
+  .card {
+    background: #ffffff;
+    border-radius: 14px;
+    border: 1px solid #e2e8f0;
+    padding: 1.4rem 1.6rem;
+    margin-bottom: 1.2rem;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  }
+  .card h2 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .card h2 .badge {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 2px 9px;
+    border-radius: 99px;
+    background: #ebf4ff;
+    color: #2b6cb0;
+  }
+
+  .style-selector {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.8rem;
+  }
+  .style-btn {
+    padding: 0.85rem 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    background: #f7fafc;
+    cursor: pointer;
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: #4a5568;
+    text-align: center;
+    transition: all 0.18s;
+    line-height: 1.4;
+  }
+  .style-btn:hover { border-color: #90cdf4; background: #ebf8ff; }
+  .style-btn.active {
+    border-color: #3182ce;
+    background: #ebf8ff;
+    color: #2b6cb0;
+  }
+  .style-btn .icon { font-size: 1.4rem; display: block; margin-bottom: 0.3rem; }
+
+  .btn-row {
+    display: flex;
+    gap: 0.7rem;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+  }
+  button.primary {
+    padding: 0.6rem 1.3rem;
+    border: none;
+    border-radius: 8px;
+    background: #3182ce;
+    color: #fff;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  button.primary:hover { background: #2c5282; }
+  button.primary:disabled { background: #a0aec0; cursor: not-allowed; }
+  button.secondary {
+    padding: 0.6rem 1.3rem;
+    border: 1.5px solid #cbd5e0;
+    border-radius: 8px;
+    background: #fff;
+    color: #4a5568;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  button.secondary:hover { border-color: #3182ce; color: #3182ce; }
+  button.secondary:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .question-box {
+    background: #f0f7ff;
+    border-left: 4px solid #3182ce;
+    border-radius: 0 10px 10px 0;
+    padding: 1rem 1.2rem;
+    font-size: 0.95rem;
+    color: #2d3748;
+    line-height: 1.7;
+    white-space: pre-line;
+  }
+  .question-tag {
+    display: inline-block;
+    font-size: 0.73rem;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 99px;
+    margin-bottom: 0.6rem;
+  }
+  .tag-olasilik { background: #c6f6d5; color: #276749; }
+  .tag-rastgele { background: #feebc8; color: #744210; }
+
+  textarea#codeArea {
+    width: 100%;
+    height: 240px;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.88rem;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 0.85rem 1rem;
+    resize: vertical;
+    background: #1e1e2e;
+    color: #cdd6f4;
+    line-height: 1.6;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  textarea#codeArea:focus { border-color: #3182ce; }
+  textarea#codeArea::placeholder { color: #6c7086; }
+
+  .feedback-section { display: none; }
+  .feedback-block {
+    border-radius: 10px;
+    padding: 1rem 1.2rem;
+    margin-bottom: 0.8rem;
+    font-size: 0.88rem;
+    line-height: 1.65;
+  }
+  .fb-correct { background: #f0fff4; border: 1px solid #9ae6b4; }
+  .fb-correct h3 { color: #276749; font-size: 0.9rem; margin-bottom: 0.5rem; }
+  .fb-wrong { background: #fff5f5; border: 1px solid #feb2b2; }
+  .fb-wrong h3 { color: #9b2c2c; font-size: 0.9rem; margin-bottom: 0.5rem; }
+  .fb-tip { background: #fffaf0; border: 1px solid #fbd38d; }
+  .fb-tip h3 { color: #744210; font-size: 0.9rem; margin-bottom: 0.5rem; }
+  .fb-solution { background: #f0f4ff; border: 1px solid #a3bffa; }
+  .fb-solution h3 { color: #2d3748; font-size: 0.9rem; margin-bottom: 0.5rem; }
+  .fb-solution pre {
+    font-family: 'Courier New', monospace;
+    font-size: 0.82rem;
+    background: #1e1e2e;
+    color: #cdd6f4;
+    padding: 0.8rem 1rem;
+    border-radius: 7px;
+    overflow-x: auto;
+    margin-top: 0.5rem;
+    line-height: 1.6;
+    white-space: pre;
+  }
+  ul.check-list { padding-left: 1.2rem; }
+  ul.check-list li { margin-bottom: 0.3rem; }
+  .check-ok::before { content: "✓ "; color: #38a169; font-weight: 700; }
+  .check-err::before { content: "✗ "; color: #e53e3e; font-weight: 700; }
+
+  .score-bar {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  .score-label { font-size: 0.9rem; font-weight: 600; color: #2d3748; }
+  .bar-wrap { flex: 1; height: 10px; background: #e2e8f0; border-radius: 99px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 99px; transition: width 0.5s; }
+  .bar-green { background: #48bb78; }
+  .bar-yellow { background: #ecc94b; }
+  .bar-red { background: #fc8181; }
+  .score-num { font-size: 0.9rem; font-weight: 700; min-width: 2.5rem; text-align: right; }
+
+  .hint-btn {
+    font-size: 0.82rem;
+    font-weight: 600;
+    padding: 5px 13px;
+    border: 1.5px solid #d69e2e;
+    border-radius: 8px;
+    background: #fffaf0;
+    color: #744210;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .hint-btn:hover { background: #feebc8; border-color: #b7791f; }
+  .hint-btn.active { background: #feebc8; border-color: #b7791f; }
+
+  .placeholder-msg {
+    text-align: center;
+    color: #a0aec0;
+    font-size: 0.9rem;
+    padding: 2rem 0;
+  }
+
+  @media (max-width: 540px) {
+    .style-selector { grid-template-columns: 1fr; }
+    .header h1 { font-size: 1.2rem; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <h1>Python Benzetim Sorusu Üretici ve Kod Kontrol Aracı</h1>
+    <p>Üniversite Benzetim Modelleri Dersi &nbsp;|&nbsp; Soru üret, kod yaz, anında geri bildirim al</p>
+  </div>
+
+  <!-- ADIM 1: Stil Seçimi -->
+  <div class="card">
+    <h2><span class="badge">1</span> Soru stilini seç</h2>
+    <div class="style-selector">
+      <div class="style-btn" id="btn-olasilik" onclick="selectStyle('olasilik')">
+        <span class="icon">🎲</span>
+        Olasılığa dayalı simülasyon sorusu
+        <br><small style="color:#718096;font-weight:400">random.random() kullanımı</small>
+      </div>
+      <div class="style-btn" id="btn-rastgele" onclick="selectStyle('rastgele')">
+        <span class="icon">🎯</span>
+        Rastgele değer üretmeye dayalı simülasyon sorusu
+        <br><small style="color:#718096;font-weight:400">random.randint() / random.choice()</small>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="primary" id="generateBtn" onclick="generateQuestion()" disabled>Soru Üret</button>
+    </div>
+  </div>
+
+  <!-- ADIM 2: Soru -->
+  <div class="card" id="questionCard" style="display:none">
+    <h2><span class="badge">2</span> Soru <span id="questionTag" class="question-tag"></span></h2>
+    <div class="question-box" id="questionText"></div>
+    <div class="btn-row" style="margin-top:1rem">
+      <button class="secondary" onclick="generateQuestion()">&#8635; Tekrar Soru Üret</button>
+    </div>
+  </div>
+
+  <!-- ADIM 3: Kod Yazma -->
+  <div class="card" id="codeCard" style="display:none">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;gap:0.5rem;flex-wrap:wrap;">
+      <h2 style="margin-bottom:0"><span class="badge">3</span> Python kodunu yaz</h2>
+      <button class="hint-btn" id="hintBtn" onclick="toggleHint()" title="Çözümü göster / gizle">
+        💡 İpucu
+      </button>
+    </div>
+    <div id="hintBox" style="display:none;margin-bottom:0.9rem;background:#1e1e2e;border:1.5px solid #4a5568;border-radius:9px;padding:0.85rem 1rem;position:relative;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem;">
+        <span style="font-size:0.75rem;font-weight:600;color:#a0aec0;letter-spacing:0.04em;">ÖRNEK ÇÖZÜM</span>
+        <button onclick="copyHint()" style="font-size:0.75rem;padding:2px 10px;border:1px solid #4a5568;border-radius:6px;background:#2d3748;color:#a0aec0;cursor:pointer;" id="copyBtn">Kopyala</button>
+      </div>
+      <pre id="hintCode" style="font-family:'Courier New',monospace;font-size:0.83rem;color:#cdd6f4;margin:0;white-space:pre;overflow-x:auto;line-height:1.65;"></pre>
+    </div>
+    <textarea id="codeArea" placeholder="# Python kodunuzu buraya yazın...
+import random
+
+# Örnek başlangıç:
+# sayi = 0
+# while ...:
+#     ..."></textarea>
+    <div class="btn-row">
+      <button class="primary" onclick="checkCode()">&#10003; Kodu Kontrol Et</button>
+      <button class="secondary" onclick="clearCode()">Temizle</button>
+    </div>
+  </div>
+
+  <!-- ADIM 4: Geri Bildirim -->
+  <div class="card feedback-section" id="feedbackCard">
+    <h2><span class="badge">4</span> Geri bildirim</h2>
+    <div class="score-bar">
+      <span class="score-label">Puan:</span>
+      <div class="bar-wrap"><div class="bar-fill" id="scoreBar" style="width:0%"></div></div>
+      <span class="score-num" id="scoreNum">0/0</span>
+    </div>
+    <div id="fbCorrect" class="feedback-block fb-correct" style="display:none">
+      <h3>✅ Doğru olan kısımlar</h3>
+      <ul class="check-list" id="fbCorrectList"></ul>
+    </div>
+    <div id="fbWrong" class="feedback-block fb-wrong" style="display:none">
+      <h3>❌ Eksik veya hatalı olan kısımlar</h3>
+      <ul class="check-list" id="fbWrongList"></ul>
+    </div>
+    <div id="fbTip" class="feedback-block fb-tip" style="display:none">
+      <h3>💡 Nasıl düzeltilmeli?</h3>
+      <ul id="fbTipList" style="padding-left:1.2rem;"></ul>
+    </div>
+    <div class="feedback-block fb-solution">
+      <h3>📋 Örnek doğru çözüm</h3>
+      <pre id="fbSolution"></pre>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ─── VERİ ───────────────────────────────────────────────────────────────────
+
+const OLASILIK_SORULARI = [
+  {
+    konu: "Burs Kazanma",
+    metin: (p, azalma, maxYil) =>
+`Bir öğrencinin burs başvurusunun ilk yıl kabul edilme olasılığı ${(p*100).toFixed(0)}%'dir.
+Her başarısız başvurudan sonra olasılık ${(azalma*100).toFixed(0)} puan azalmaktadır.
+Program, burs kazanılana kadar veya olasılık sıfıra düşene kadar devam etmelidir.
+
+Görevi:
+• Bir döngü kurarak her yılda random.random() ile 0-1 arasında rastgele sayı üretin.
+• Üretilen sayı mevcut olasılıktan küçük veya eşitse burs kazanıldı sayılır.
+• Burs kazanılırsa kaçıncı yılda kazanıldığını ekrana yazdırın.
+• Olasılık ${(p*100).toFixed(0) - Math.floor(p/azalma)*azalma*100 <= 0 ? 0 : (azalma*100).toFixed(0)} puan azaltılmaya devam ederse ve sıfıra düşerse "Burs kazanılamadı" mesajı verilmelidir.`,
+    p: () => pick([0.30, 0.40, 0.25, 0.35]),
+    azalma: () => pick([0.05, 0.08, 0.10]),
+    extra: {}
+  },
+  {
+    konu: "Sınav Geçme",
+    metin: (p, azalma) =>
+`Bir öğrencinin sınavı ilk denemede geçme olasılığı ${(p*100).toFixed(0)}%'dir.
+Her başarısız denemeden sonra olasılık ${(azalma*100).toFixed(0)} puan düşmektedir.
+(Yorgunluk ve motivasyon kaybı nedeniyle)
+
+Görevi:
+• Her sınav denemesinde random.random() ile 0-1 arası sayı üretin.
+• Sayı mevcut geçme olasılığından küçük veya eşitse sınav geçildi.
+• Kaçıncı denemede geçildiğini ekrana yazdırın.
+• Olasılık 0'a düşerse "Sınav geçilemedi" mesajı verin.`,
+    p: () => pick([0.45, 0.50, 0.60, 0.35]),
+    azalma: () => pick([0.05, 0.10, 0.08]),
+    extra: {}
+  },
+  {
+    konu: "İş Başvurusu Kabulü",
+    metin: (p, azalma) =>
+`Bir adayın iş başvurusunun kabul edilme başlangıç olasılığı ${(p*100).toFixed(0)}%'dir.
+Her reddedilmeden sonra özgüven ve tecrübe eksikliğiyle birlikte olasılık ${(azalma*100).toFixed(0)} puan azalmaktadır.
+
+Görevi:
+• Her başvuruda random.random() ile rastgele sayı üretin.
+• Sayı mevcut kabul olasılığından küçük veya eşitse iş teklifi alındı.
+• Kaçıncı başvuruda teklif alındığını yazdırın.
+• Olasılık sıfıra düşerse "Kabul edilemedi" yazdırın.`,
+    p: () => pick([0.20, 0.30, 0.25]),
+    azalma: () => pick([0.03, 0.05, 0.04]),
+    extra: {}
+  },
+  {
+    konu: "Ürün Satılması",
+    metin: (p, azalma) =>
+`Bir satıcının her müşteriyle görüşmede ürün satma olasılığı ${(p*100).toFixed(0)}%'dir.
+Her başarısız görüşmede motivasyon düşüşüyle olasılık ${(azalma*100).toFixed(0)} puan azalmaktadır.
+
+Görevi:
+• Her görüşmede random.random() ile 0-1 arası rastgele sayı üretin.
+• Sayı ≤ mevcut olasılık ise ürün satıldı.
+• Kaçıncı görüşmede satış yapıldığını ekrana yazdırın.
+• Olasılık 0'a düşerse "Satış yapılamadı" mesajı verin.`,
+    p: () => pick([0.35, 0.40, 0.30]),
+    azalma: () => pick([0.05, 0.07, 0.06]),
+    extra: {}
+  },
+  {
+    konu: "Hastanın İyileşmesi",
+    metin: (p, azalma) =>
+`Bir hastanın belirli bir tedaviyle her haftada iyileşme olasılığı ${(p*100).toFixed(0)}%'dir.
+Tedavi işe yaramazsa her geçen haftada olasılık ${(azalma*100).toFixed(0)} puan düşmektedir.
+
+Görevi:
+• Her haftada random.random() ile rastgele sayı üretin.
+• Sayı ≤ mevcut iyileşme olasılığı ise hasta iyileşti.
+• Kaçıncı haftada iyileştiğini ekrana yazdırın.
+• Olasılık 0'a düşerse "Hasta iyileşemedi" mesajı verin.`,
+    p: () => pick([0.40, 0.50, 0.35]),
+    azalma: () => pick([0.05, 0.08, 0.10]),
+    extra: {}
+  },
+  {
+    konu: "Takımın Şampiyon Olması",
+    metin: (p, azalma) =>
+`Bir futbol takımının her sezon şampiyonluk kazanma olasılığı ${(p*100).toFixed(0)}%'dir.
+Her başarısız sezonda oyuncu performansı düşüşüyle olasılık ${(azalma*100).toFixed(0)} puan azalmaktadır.
+
+Görevi:
+• Her sezonda random.random() ile rastgele sayı üretin.
+• Sayı ≤ mevcut olasılık ise şampiyonluk kazanıldı.
+• Kaçıncı sezonda şampiyonluk kazanıldığını yazdırın.
+• Olasılık 0'a düşerse "Şampiyonluk kazanılamadı" yazdırın.`,
+    p: () => pick([0.20, 0.25, 0.30]),
+    azalma: () => pick([0.03, 0.05, 0.04]),
+    extra: {}
+  },
+  {
+    konu: "Müşterinin Kampanyaya Katılması",
+    metin: (p, azalma) =>
+`Bir e-ticaret şirketinin her müşteriye gönderdiği kampanya e-postasında müşterinin katılım gösterme olasılığı ${(p*100).toFixed(0)}%'dir.
+Her başarısız gönderimde ilgi azalmasıyla olasılık ${(azalma*100).toFixed(0)} puan düşmektedir.
+
+Görevi:
+• Her e-posta gönderiminde random.random() ile rastgele sayı üretin.
+• Sayı ≤ mevcut olasılık ise müşteri kampanyaya katıldı.
+• Kaçıncı gönderimde katılım sağlandığını yazdırın.
+• Olasılık 0'a düşerse "Katılım sağlanamadı" mesajı verin.`,
+    p: () => pick([0.15, 0.20, 0.25]),
+    azalma: () => pick([0.02, 0.03, 0.04]),
+    extra: {}
+  },
+  {
+    konu: "Oyunda Nadir Eşya Kazanılması",
+    metin: (p, azalma) =>
+`Bir oyuncunun her sandık açışında nadir eşya kazanma olasılığı ${(p*100).toFixed(0)}%'dir.
+Arka arkaya başarısız her açılışta şans düşüşüyle olasılık ${(azalma*100).toFixed(0)} puan azalmaktadır.
+
+Görevi:
+• Her sandık açılışında random.random() ile rastgele sayı üretin.
+• Sayı ≤ mevcut olasılık ise nadir eşya kazanıldı.
+• Kaçıncı açılışta eşya kazanıldığını ekrana yazdırın.
+• Olasılık 0'a düşerse "Nadir eşya kazanılamadı" mesajı verin.`,
+    p: () => pick([0.10, 0.15, 0.20]),
+    azalma: () => pick([0.02, 0.03, 0.01]),
+    extra: {}
+  }
+];
+
+const RASTGELE_SORULARI = [
+  {
+    konu: "İki Zarın Toplamı",
+    metin: (hedef) =>
+`İki zar sürekli atılmaktadır.
+Her atışta iki zar için random.randint(1, 6) kullanılarak değer üretilir.
+İki zarın toplamının ${hedef} olması beklenmektedir.
+
+Görevi:
+• Her denemede iki zar için ayrı ayrı random.randint(1, 6) kullanın.
+• İki zarın toplamı ${hedef} olana kadar döngü devam etmelidir.
+• Kaçıncı denemede bu toplamın elde edildiğini ekrana yazdırın.`,
+    hedef: () => pick([7, 8, 9, 10, 11, 12])
+  },
+  {
+    konu: "Yazı-Tura Serisi",
+    metin: (hedef) =>
+`Bir para sürekli havaya atılmaktadır.
+Her atışta random.choice(['Yazı', 'Tura']) ile sonuç belirlenmektedir.
+Üst üste ${hedef} kez aynı sonucun (Yazı veya Tura) gelmesi beklenmektedir.
+
+Görevi:
+• Her atışta random.choice() kullanarak Yazı veya Tura üretin.
+• Üst üste ${hedef} aynı sonuç gelene kadar döngü devam etsin.
+• Kaçıncı atışta bu seri tamamlandığını ekrana yazdırın.`,
+    hedef: () => pick([3, 4, 5])
+  },
+  {
+    konu: "Hedef Sayı Bulma",
+    metin: (min, max, hedef) =>
+`Bilgisayar ${min} ile ${max} arasında sürekli rastgele sayı üretmektedir.
+random.randint(${min}, ${max}) ile sayı üretilmektedir.
+Hedef sayı: ${hedef}
+
+Görevi:
+• random.randint(${min}, ${max}) ile her turda rastgele sayı üretin.
+• Üretilen sayı ${hedef} olana kadar döngü çalışmaya devam etsin.
+• Kaçıncı denemede ${hedef} sayısının üretildiğini ekrana yazdırın.`,
+    params: () => { const min=1, max=pick([10,20,50,100]); return { min, max, hedef: Math.floor(Math.random()*(max-min+1))+min }; }
+  },
+  {
+    konu: "İki Öğrencinin Aynı Notu Alması",
+    metin: (notlar) =>
+`Bir sınıfta iki öğrenci her sınavda bağımsız olarak rastgele not almaktadır.
+Notlar şunlardan biri olabilir: ${notlar.join(', ')}
+Her sınav turunda iki öğrenci için random.choice() kullanılmaktadır.
+
+Görevi:
+• Her turda iki öğrenci için ayrı ayrı random.choice(notlar) ile not üretin.
+• İki öğrencinin notu eşit olana kadar döngü çalışmaya devam etsin.
+• Kaçıncı sınavda aynı notu aldıklarını ekrana yazdırın.`,
+    notlar: () => pick([['AA','BA','BB','CB','CC','DC','DD','FF'], ['A','B','C','D','F'], [60,65,70,75,80,85,90,95,100]])
+  },
+  {
+    konu: "Kutudan İstenen Renk Top Çekilmesi",
+    metin: (renkler, hedef) =>
+`Bir kutu içinde farklı renklerde toplar bulunmaktadır.
+Renkler: ${renkler.join(', ')}
+Her seferinde random.choice() ile bir top çekilmekte ve geri konulmaktadır.
+Hedef renk: ${hedef}
+
+Görevi:
+• Her çekilişte random.choice(${JSON.stringify(renkler)}) ile rastgele renk üretin.
+• Çekilen top ${hedef} rengi olana kadar döngü devam etsin.
+• Kaçıncı çekilişte ${hedef} topun çekildiğini ekrana yazdırın.`,
+    params: () => {
+      const setler = [['Kırmızı','Mavi','Yeşil','Sarı'],['Kırmızı','Beyaz','Siyah'],['Mor','Turuncu','Pembe','Gri','Lacivert']];
+      const renkler = pick(setler);
+      return { renkler, hedef: pick(renkler) };
+    }
+  },
+  {
+    konu: "Oyun Kutusundan Efsanevi Eşya",
+    metin: (esyalar, hedef) =>
+`Bir oyun kutusunda farklı nadirlik seviyelerinde eşyalar bulunmaktadır.
+Eşyalar: ${esyalar.join(', ')}
+Her kutu açılışında random.choice() ile rastgele bir eşya çıkmaktadır.
+Hedef eşya: ${hedef}
+
+Görevi:
+• Her açılışta random.choice(${JSON.stringify(esyalar)}) ile eşya belirleyin.
+• Çıkan eşya "${hedef}" olana kadar döngü çalışmaya devam etsin.
+• Kaçıncı açılışta "${hedef}" eşyasının çıktığını ekrana yazdırın.`,
+    params: () => {
+      const setler = [
+        { esyalar: ['Yaygın Kılıç','Nadir Zırh','Destansı Yay','Efsanevi Ejderha Kılıcı'], hedef: 'Efsanevi Ejderha Kılıcı' },
+        { esyalar: ['Sıradan Çanta','Gümüş Madalyon','Altın Taç','Efsanevi Kristal Küre'], hedef: 'Efsanevi Kristal Küre' },
+        { esyalar: ['Düz Ok','Büyülü Taş','Kahraman Kalkanı','Efsanevi Anka Tüyü'], hedef: 'Efsanevi Anka Tüyü' }
+      ];
+      return pick(setler);
+    }
+  },
+  {
+    konu: "Güvenlik Kodu Tahmini",
+    metin: (min, max, kod) =>
+`Bir güvenlik sistemi ${min} ile ${max} arasında rastgele şifre denemeleri yapmaktadır.
+Her denemede random.randint(${min}, ${max}) kullanılmaktadır.
+Kırılacak gizli kod: ${kod}
+
+Görevi:
+• Her denemede random.randint(${min}, ${max}) ile rastgele kod üretin.
+• Üretilen kod ${kod} olana kadar döngü çalışmaya devam etsin.
+• Kaçıncı denemede doğru kodun tahmin edildiğini ekrana yazdırın.`,
+    params: () => { const min=1000, max=9999; return { min, max, kod: Math.floor(Math.random()*(max-min+1))+min }; }
+  },
+  {
+    konu: "İki Zarın İkisi de 6",
+    metin: () =>
+`İki zar sürekli atılmaktadır.
+Her zar için random.randint(1, 6) ile değer üretilmektedir.
+İki zarın da aynı anda 6 gelmesi beklenmektedir.
+
+Görevi:
+• Her denemede iki ayrı random.randint(1, 6) kullanarak zar değeri üretin.
+• Her iki zar da 6 gelene kadar döngü devam etmelidir.
+• Kaçıncı denemede çift 6 elde edildiğini ekrana yazdırın.`,
+    params: () => ({})
+  }
+];
+
+// ─── YARDIMCI ───────────────────────────────────────────────────────────────
+function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+let seciliStil = null;
+let aktifSoru = null;
+
+function selectStyle(stil) {
+  seciliStil = stil;
+  document.getElementById('btn-olasilik').classList.toggle('active', stil === 'olasilik');
+  document.getElementById('btn-rastgele').classList.toggle('active', stil === 'rastgele');
+  document.getElementById('generateBtn').disabled = false;
+}
+
+// ─── SORU ÜRETİCİ ───────────────────────────────────────────────────────────
+function generateQuestion() {
+  if (!seciliStil) return;
+  clearCode();
+  hideFeedback();
+  const hintBox = document.getElementById('hintBox');
+  const hintBtn = document.getElementById('hintBtn');
+  if (hintBox) { hintBox.style.display = 'none'; }
+  if (hintBtn) { hintBtn.classList.remove('active'); hintBtn.textContent = '💡 İpucu'; }
+
+  if (seciliStil === 'olasilik') {
+    const q = pick(OLASILIK_SORULARI);
+    const p = q.p();
+    const azalma = q.azalma();
+    const maxAdim = Math.floor(p / azalma) + 1;
+    aktifSoru = {
+      tip: 'olasilik',
+      konu: q.konu,
+      metin: q.metin(p, azalma, maxAdim),
+      p, azalma, maxAdim,
+      cozum: olasilikCozum(q.konu, p, azalma)
+    };
+    document.getElementById('questionTag').className = 'question-tag tag-olasilik';
+    document.getElementById('questionTag').textContent = 'Olasılık Simülasyonu';
+  } else {
+    const q = pick(RASTGELE_SORULARI);
+    let params = {};
+    let metin = '';
+    let cozum = '';
+
+    if (q.konu === 'İki Zarın Toplamı') {
+      const hedef = q.hedef();
+      params = { hedef };
+      metin = q.metin(hedef);
+      cozum = zarToplamiCozum(hedef);
+    } else if (q.konu === 'Yazı-Tura Serisi') {
+      const hedef = q.hedef();
+      params = { hedef };
+      metin = q.metin(hedef);
+      cozum = yaziTuraCozum(hedef);
+    } else if (q.konu === 'Hedef Sayı Bulma') {
+      const p = q.params();
+      params = p;
+      metin = q.metin(p.min, p.max, p.hedef);
+      cozum = hedefSayiCozum(p.min, p.max, p.hedef);
+    } else if (q.konu === 'İki Öğrencinin Aynı Notu Alması') {
+      const notlar = q.notlar();
+      params = { notlar };
+      metin = q.metin(notlar);
+      cozum = ayniNotCozum(notlar);
+    } else if (q.konu === 'Kutudan İstenen Renk Top Çekilmesi') {
+      const p = q.params();
+      params = p;
+      metin = q.metin(p.renkler, p.hedef);
+      cozum = renkTopCozum(p.renkler, p.hedef);
+    } else if (q.konu === 'Oyun Kutusundan Efsanevi Eşya') {
+      const p = q.params();
+      params = p;
+      metin = q.metin(p.esyalar, p.hedef);
+      cozum = esyaCozum(p.esyalar, p.hedef);
+    } else if (q.konu === 'Güvenlik Kodu Tahmini') {
+      const p = q.params();
+      params = p;
+      metin = q.metin(p.min, p.max, p.kod);
+      cozum = kodCozum(p.min, p.max, p.kod);
+    } else if (q.konu === 'İki Zarın İkisi de 6') {
+      metin = q.metin();
+      cozum = ciftAltiCozum();
+    }
+
+    aktifSoru = { tip: 'rastgele', konu: q.konu, metin, params, cozum };
+    document.getElementById('questionTag').className = 'question-tag tag-rastgele';
+    document.getElementById('questionTag').textContent = 'Rastgele Değer Simülasyonu';
+  }
+
+  document.getElementById('questionText').textContent = aktifSoru.metin;
+  document.getElementById('questionCard').style.display = 'block';
+  document.getElementById('codeCard').style.display = 'block';
+  document.getElementById('codeArea').focus();
+}
+
+// ─── ÇÖZÜM ŞABLONLARİ ───────────────────────────────────────────────────────
+function olasilikCozum(konu, p, azalma) {
+return `import random
+
+olasilik = ${p.toFixed(2)}
+deneme = 0
+
+while olasilik > 0:
+    deneme += 1
+    sayi = random.random()
+    if sayi <= olasilik:
+        print(f"${konu}: {deneme}. denemede gerçekleşti!")
+        break
+    olasilik -= ${azalma.toFixed(2)}
+else:
+    print("${konu}: Gerçekleşmedi.")`;
+}
+
+function zarToplamiCozum(hedef) {
+return `import random
+
+deneme = 0
+
+while True:
+    deneme += 1
+    zar1 = random.randint(1, 6)
+    zar2 = random.randint(1, 6)
+    if zar1 + zar2 == ${hedef}:
+        print(f"Toplam ${hedef}, {deneme}. denemede elde edildi!")
+        break`;
+}
+
+function yaziTuraCozum(hedef) {
+return `import random
+
+deneme = 0
+seri = 0
+onceki = None
+
+while seri < ${hedef}:
+    deneme += 1
+    sonuc = random.choice(["Yazı", "Tura"])
+    if sonuc == onceki:
+        seri += 1
+    else:
+        seri = 1
+    onceki = sonuc
+
+print(f"Üst üste ${hedef} aynı sonuç {deneme}. atışta tamamlandı!")`;
+}
+
+function hedefSayiCozum(min, max, hedef) {
+return `import random
+
+deneme = 0
+
+while True:
+    deneme += 1
+    sayi = random.randint(${min}, ${max})
+    if sayi == ${hedef}:
+        print(f"${hedef} sayısı {deneme}. denemede üretildi!")
+        break`;
+}
+
+function ayniNotCozum(notlar) {
+  const notStr = JSON.stringify(notlar);
+return `import random
+
+notlar = ${notStr}
+deneme = 0
+
+while True:
+    deneme += 1
+    not1 = random.choice(notlar)
+    not2 = random.choice(notlar)
+    if not1 == not2:
+        print(f"İki öğrenci {deneme}. sınavda aynı notu ({not1}) aldı!")
+        break`;
+}
+
+function renkTopCozum(renkler, hedef) {
+  const r = JSON.stringify(renkler);
+return `import random
+
+renkler = ${r}
+deneme = 0
+
+while True:
+    deneme += 1
+    top = random.choice(renkler)
+    if top == "${hedef}":
+        print(f"${hedef} renk top {deneme}. çekilişte çıktı!")
+        break`;
+}
+
+function esyaCozum(esyalar, hedef) {
+  const e = JSON.stringify(esyalar);
+return `import random
+
+esyalar = ${e}
+deneme = 0
+
+while True:
+    deneme += 1
+    esya = random.choice(esyalar)
+    if esya == "${hedef}":
+        print(f"'{hedef}' {deneme}. açılışta elde edildi!")
+        break`;
+}
+
+function kodCozum(min, max, kod) {
+return `import random
+
+deneme = 0
+
+while True:
+    deneme += 1
+    tahmin = random.randint(${min}, ${max})
+    if tahmin == ${kod}:
+        print(f"Güvenlik kodu ${kod} — {deneme}. denemede kırıldı!")
+        break`;
+}
+
+function ciftAltiCozum() {
+return `import random
+
+deneme = 0
+
+while True:
+    deneme += 1
+    zar1 = random.randint(1, 6)
+    zar2 = random.randint(1, 6)
+    if zar1 == 6 and zar2 == 6:
+        print(f"Çift 6, {deneme}. denemede geldi!")
+        break`;
+}
+
+// ─── KOD KONTROL ────────────────────────────────────────────────────────────
+function checkCode() {
+  if (!aktifSoru) return;
+  const kod = document.getElementById('codeArea').value.trim();
+  if (!kod) { alert('Lütfen önce Python kodunuzu yazın.'); return; }
+
+  const tip = aktifSoru.tip;
+  const dogru = [];
+  const hatali = [];
+  const ipuclari = [];
+
+  // 1) import random
+  if (/import\s+random/.test(kod)) {
+    dogru.push('import random modülü doğru biçimde import edilmiş.');
+  } else {
+    hatali.push('import random satırı eksik.');
+    ipuclari.push('Kodun en üstüne "import random" satırını eklemelisin.');
+  }
+
+  // 2) Döngü
+  if (/while\s+/.test(kod)) {
+    dogru.push('while döngüsü kullanılmış (tercih edilen yöntem).');
+  } else if (/for\s+/.test(kod)) {
+    dogru.push('for döngüsü kullanılmış (while tercih edilir ama kabul edilebilir).');
+  } else {
+    hatali.push('Herhangi bir döngü (while/for) bulunamadı.');
+    ipuclari.push('"while True:" veya koşullu bir while döngüsü kurarak her denemeyi simüle etmelisin.');
+  }
+
+  // 3) Sayaç değişkeni
+  if (/deneme|sayac|sayi_|tur|yil|hafta|iterasyon/i.test(kod)) {
+    dogru.push('Deneme/yıl/hafta sayacı tanımlanmış.');
+  } else {
+    hatali.push('Deneme sayacı (deneme, sayac, tur vb.) tanımlanmamış.');
+    ipuclari.push('"deneme = 0" gibi bir sayaç değişkeni tanımla ve her döngü turunda 1 artır.');
+  }
+
+  // 4a) Olasılık sorusu: random.random()
+  if (tip === 'olasilik') {
+    if (/random\.random\(\)/.test(kod)) {
+      dogru.push('random.random() ile 0-1 arasında rastgele sayı üretimi yapılmış.');
+    } else {
+      hatali.push('random.random() kullanımı eksik.');
+      ipuclari.push('Olasılık simülasyonlarında "sayi = random.random()" kullanarak 0-1 arası sayı üret.');
+    }
+
+    // Olasılık azaltma
+    if (/-=\s*[\d.]+/.test(kod) || /olasilik\s*=\s*olasilik\s*-/.test(kod)) {
+      dogru.push('Başarısız denemede olasılık azaltılmış.');
+    } else {
+      hatali.push('Başarısız denemede olasılık azaltılmıyor.');
+      ipuclari.push('Her başarısız denemede "olasilik -= azalma_miktari" ifadesiyle olasılığı düşür.');
+    }
+
+    // Olasılık 0 kontrolü
+    if (/olasilik\s*[<=>]+\s*0|olasilik\s*<=\s*0|else:/.test(kod)) {
+      dogru.push('Olasılık 0\'a düştüğünde "gerçekleşmedi" durumu ele alınmış.');
+    } else {
+      hatali.push('Olasılık 0\'a düşünce "gerçekleşmedi" mesajı verilmiyor.');
+      ipuclari.push('Döngü sonunda else bloğu veya ayrı bir if kontrolüyle "Gerçekleşmedi" mesajı eklemelisin.');
+    }
+
+    // Şart kontrolü (<=)
+    if (/<=\s*olasilik|sayi\s*<=|olasilik\s*>=/.test(kod)) {
+      dogru.push('Başarı şartı doğru biçimde yazılmış (random sayı ≤ olasılık).');
+    } else if (/if\s+random\.random/.test(kod) || /if\s+sayi/.test(kod) || /if\s+r\b/.test(kod)) {
+      dogru.push('if kontrolü mevcut, şart mantığı gözden geçirilmeli.');
+    } else {
+      hatali.push('Başarı şartı (if sayi <= olasilik) eksik veya yanlış.');
+      ipuclari.push('"if sayi <= olasilik:" şeklinde başarı şartını kontrol etmelisin.');
+    }
+  }
+
+  // 4b) Rastgele değer sorusu
+  if (tip === 'rastgele') {
+    const kullanimiVar = /random\.randint\(|random\.choice\(/.test(kod);
+    if (kullanimiVar) {
+      dogru.push('random.randint() veya random.choice() ile rastgele değer üretimi yapılmış.');
+    } else {
+      hatali.push('random.randint() veya random.choice() kullanımı eksik.');
+      ipuclari.push('Değer üretmek için "random.randint(min, max)" veya "random.choice(liste)" kullanmalısın.');
+    }
+
+    // Şart kontrolü
+    if (/if\s+.*==|if\s+.*\+/.test(kod)) {
+      dogru.push('Hedef değer veya koşul kontrolü için if ifadesi kullanılmış.');
+    } else {
+      hatali.push('Hedef şartı kontrol eden bir if ifadesi bulunamadı.');
+      ipuclari.push('Üretilen değer/toplam hedefle eşleştiğinde bunu if ile kontrol etmelisin.');
+    }
+  }
+
+  // 5) break / return ile durdurma
+  if (/\bbreak\b/.test(kod)) {
+    dogru.push('break ile döngü başarılı durumda sonlandırılmış.');
+  } else if (/\breturn\b/.test(kod)) {
+    dogru.push('return ile fonksiyon başarılı durumda sonlandırılmış.');
+  } else {
+    hatali.push('Başarı durumunda break veya return kullanılmamış.');
+    ipuclari.push('Şart sağlandığında "break" ile döngüyü durdurmalısın.');
+  }
+
+  // 6) print ile çıktı
+  if (/print\s*\(/.test(kod)) {
+    dogru.push('print() ile sonuç ekrana yazdırılıyor.');
+  } else {
+    hatali.push('print() ifadesi yok — kaçıncı denemede gerçekleştiği yazdırılmıyor.');
+    ipuclari.push('Sonucu print() ile göstermelisin. Örn: print(f"Olay {deneme}. denemede gerçekleşti!")');
+  }
+
+  // PUAN
+  const toplam = 7;
+  const puan = dogru.length;
+  const oran = Math.round((puan / toplam) * 100);
+
+  // DOM GÜNCELLEMESİ
+  const scoreBar = document.getElementById('scoreBar');
+  scoreBar.style.width = oran + '%';
+  scoreBar.className = 'bar-fill ' + (oran >= 70 ? 'bar-green' : oran >= 40 ? 'bar-yellow' : 'bar-red');
+  document.getElementById('scoreNum').textContent = puan + '/' + toplam;
+
+  const fbCorrect = document.getElementById('fbCorrect');
+  const fbWrong = document.getElementById('fbWrong');
+  const fbTip = document.getElementById('fbTip');
+
+  const correctList = document.getElementById('fbCorrectList');
+  const wrongList = document.getElementById('fbWrongList');
+  const tipList = document.getElementById('fbTipList');
+
+  correctList.innerHTML = dogru.map(d => `<li class="check-ok">${d}</li>`).join('');
+  wrongList.innerHTML = hatali.map(h => `<li class="check-err">${h}</li>`).join('');
+  tipList.innerHTML = ipuclari.map(i => `<li style="margin-bottom:0.3rem">${i}</li>`).join('');
+
+  fbCorrect.style.display = dogru.length > 0 ? 'block' : 'none';
+  fbWrong.style.display = hatali.length > 0 ? 'block' : 'none';
+  fbTip.style.display = ipuclari.length > 0 ? 'block' : 'none';
+
+  document.getElementById('fbSolution').textContent = aktifSoru.cozum;
+
+  const fc = document.getElementById('feedbackCard');
+  fc.classList.add('feedback-section');
+  fc.style.display = 'block';
+  fc.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function clearCode() {
+  document.getElementById('codeArea').value = '';
+}
+
+function toggleHint() {
+  const box = document.getElementById('hintBox');
+  const btn = document.getElementById('hintBtn');
+  if (!aktifSoru) return;
+  if (box.style.display === 'none') {
+    document.getElementById('hintCode').textContent = aktifSoru.cozum;
+    box.style.display = 'block';
+    btn.classList.add('active');
+    btn.textContent = '🙈 İpucunu Gizle';
+  } else {
+    box.style.display = 'none';
+    btn.classList.remove('active');
+    btn.textContent = '💡 İpucu';
+  }
+}
+
+function copyHint() {
+  const code = document.getElementById('hintCode').textContent;
+  navigator.clipboard.writeText(code).then(() => {
+    const btn = document.getElementById('copyBtn');
+    btn.textContent = '✓ Kopyalandı';
+    setTimeout(() => { btn.textContent = 'Kopyala'; }, 1800);
+  });
+}
+
+function hideFeedback() {
+  document.getElementById('feedbackCard').style.display = 'none';
+}
+</script>
+
+<!-- KULLANIM AÇIKLAMASI (sayfa altında) -->
+<div style="max-width:860px;margin:0 auto 2rem;padding:1rem 1.4rem;background:#fff;border-radius:14px;border:1px solid #e2e8f0;font-size:0.85rem;color:#718096;line-height:1.7;">
+  <strong style="color:#4a5568;display:block;margin-bottom:0.4rem">📖 Kullanım Kılavuzu</strong>
+  1. Soru stilini seç (Olasılık veya Rastgele Değer simülasyonu).<br>
+  2. "Soru Üret" butonuna tıkla — her tıklamada farklı konu ve parametrelerle yeni soru gelir.<br>
+  3. Karanlık kod alanına Python kodunu yaz.<br>
+  4. "Kodu Kontrol Et" butonuna bas — import, döngü, sayaç, şart ve print kullanımı otomatik analiz edilir.<br>
+  5. Geri bildirim kartındaki yeşil (doğru) ve kırmızı (eksik) maddeleri incele, ipuçlarını oku.<br>
+  6. Örnek doğru çözümü incele.<br>
+  7. "Tekrar Soru Üret" ile aynı stilden yeni soru al ve kod alanı temizlenir.
+</div>
+
+</body>
+</html>
