@@ -290,8 +290,16 @@ import random
 # while ...:
 #     ..."></textarea>
     <div class="btn-row">
+      <button class="primary" onclick="runCode()" id="runBtn">&#9654; Kodu Çalıştır</button>
       <button class="primary" onclick="checkCode()">&#10003; Kodu Kontrol Et</button>
       <button class="secondary" onclick="clearCode()">Temizle</button>
+    </div>
+    <div id="outputBox" style="display:none;margin-top:0.9rem;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.4rem;">
+        <span style="font-size:0.78rem;font-weight:600;color:#a0aec0;letter-spacing:0.04em;">ÇIKTI</span>
+        <span id="outputStatus" style="font-size:0.75rem;"></span>
+      </div>
+      <pre id="outputText" style="font-family:'Courier New',monospace;font-size:0.85rem;background:#0d1117;color:#e6edf3;padding:0.85rem 1rem;border-radius:8px;margin:0;min-height:48px;white-space:pre-wrap;word-break:break-word;line-height:1.6;border:1.5px solid #30363d;"></pre>
     </div>
   </div>
 
@@ -993,5 +1001,59 @@ function hideFeedback() {
   7. "Tekrar Soru Üret" ile aynı stilden yeni soru al ve kod alanı temizlenir.
 </div>
 
+<script src="https://cdn.jsdelivr.net/pyodide/v0.25.1/full/pyodide.js"></script>
+<script>
+let pyodide = null;
+let pyodideLoading = false;
+
+async function loadPyodideIfNeeded() {
+  if (pyodide) return pyodide;
+  if (pyodideLoading) return null;
+  pyodideLoading = true;
+  const btn = document.getElementById('runBtn');
+  btn.textContent = '⏳ Python yükleniyor...';
+  btn.disabled = true;
+  pyodide = await loadPyodide({ indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.25.1/full/' });
+  btn.textContent = '▶ Kodu Çalıştır';
+  btn.disabled = false;
+  return pyodide;
+}
+
+async function runCode() {
+  const kod = document.getElementById('codeArea').value.trim();
+  if (!kod) { alert('Lütfen önce Python kodunuzu yazın.'); return; }
+
+  const btn = document.getElementById('runBtn');
+  const outputBox = document.getElementById('outputBox');
+  const outputText = document.getElementById('outputText');
+  const outputStatus = document.getElementById('outputStatus');
+
+  outputBox.style.display = 'block';
+  outputText.style.color = '#e6edf3';
+  outputText.textContent = '⏳ Çalıştırılıyor...';
+  outputStatus.textContent = '';
+
+  const py = await loadPyodideIfNeeded();
+  if (!py) return;
+
+  // stdout'u yakala
+  let output = '';
+  py.setStdout({ batched: (text) => { output += text + '\n'; } });
+  py.setStderr({ batched: (text) => { output += '⚠ ' + text + '\n'; } });
+
+  const start = performance.now();
+  try {
+    await py.runPythonAsync(kod);
+    const ms = (performance.now() - start).toFixed(0);
+    outputText.textContent = output.trim() || '(Çıktı yok)';
+    outputStatus.innerHTML = `<span style="color:#48bb78;font-weight:600;">✓ Başarılı</span> <span style="color:#718096">${ms}ms</span>`;
+  } catch (err) {
+    const ms = (performance.now() - start).toFixed(0);
+    outputText.style.color = '#fc8181';
+    outputText.textContent = err.message;
+    outputStatus.innerHTML = `<span style="color:#fc8181;font-weight:600;">✗ Hata</span> <span style="color:#718096">${ms}ms</span>`;
+  }
+}
+</script>
 </body>
 </html>
