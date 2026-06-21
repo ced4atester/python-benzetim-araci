@@ -243,26 +243,18 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
   background:rgba(108,142,247,0.2);color:var(--accent);
   border:1px solid rgba(108,142,247,0.4);
   border-radius:50%;font-size:0.68rem;font-weight:700;
-  text-align:center;line-height:14px;cursor:help;position:relative;
+  text-align:center;line-height:14px;cursor:help;
   flex-shrink:0;user-select:none;
 }
-#panel-kuyruk .tip::after{
-  content:attr(data-tip);position:absolute;
-  bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);
-  background:#1e2240;color:var(--text);font-size:0.77rem;font-weight:400;
-  line-height:1.6;padding:9px 12px;border-radius:9px;width:240px;
-  white-space:normal;pointer-events:none;opacity:0;
-  transition:opacity 0.15s;z-index:999;
-  box-shadow:0 8px 24px rgba(0,0,0,0.5);border:1px solid var(--border);
+/* Global JS tooltip popup */
+#qs-tip-popup{
+  position:fixed;z-index:9999;
+  background:#1e2240;color:var(--text);font-size:0.8rem;font-weight:400;
+  line-height:1.65;padding:10px 13px;border-radius:10px;width:250px;
+  white-space:normal;pointer-events:none;display:none;
+  box-shadow:0 8px 28px rgba(0,0,0,0.6);border:1px solid var(--border);
+  transition:opacity 0.12s;
 }
-#panel-kuyruk .tip::before{
-  content:'';position:absolute;bottom:calc(100% + 3px);
-  left:50%;transform:translateX(-50%);
-  border:5px solid transparent;border-top-color:#1e2240;
-  opacity:0;transition:opacity 0.15s;pointer-events:none;z-index:999;
-}
-#panel-kuyruk .tip:hover::after,
-#panel-kuyruk .tip:hover::before{opacity:1;}
 
 /* output box */
 #outputBox pre{
@@ -275,6 +267,9 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
 </style>
 </head>
 <body>
+
+<!-- Global tooltip popup -->
+<div id="qs-tip-popup"></div>
 
 <!-- HEADER -->
 <div class="portal-header">
@@ -801,6 +796,37 @@ function qsNewQuestion(){
   document.getElementById('qs-scoreBanner').style.display='none';
 }
 qsNewQuestion();
+
+// ── Global JS Tooltip (tablo içi overflow sorununu çözer) ──
+(function(){
+  const popup = document.getElementById('qs-tip-popup');
+  document.body.addEventListener('mouseover', function(e){
+    const tip = e.target.closest('.tip');
+    if(!tip) return;
+    const text = tip.getAttribute('data-tip');
+    if(!text) return;
+    popup.textContent = text;
+    popup.style.display = 'block';
+  });
+  document.body.addEventListener('mousemove', function(e){
+    if(popup.style.display === 'none') return;
+    const x = e.clientX, y = e.clientY;
+    const pw = popup.offsetWidth, ph = popup.offsetHeight;
+    const vw = window.innerWidth, vh = window.innerHeight;
+    let left = x - pw / 2;
+    let top  = y - ph - 12;
+    if(left < 8) left = 8;
+    if(left + pw > vw - 8) left = vw - pw - 8;
+    if(top < 8) top = y + 20;
+    popup.style.left = left + 'px';
+    popup.style.top  = top  + 'px';
+  });
+  document.body.addEventListener('mouseout', function(e){
+    const tip = e.target.closest('.tip');
+    if(!tip) return;
+    popup.style.display = 'none';
+  });
+})();
 </script>
 <script src="https://cdn.jsdelivr.net/pyodide/v0.25.1/full/pyodide.js"></script>
 </body>
