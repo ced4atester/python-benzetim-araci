@@ -279,6 +279,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
     <button class="tab-btn active" onclick="switchTab('python',this)">🐍 Python Simülasyon Soruları</button>
     <button class="tab-btn" onclick="switchTab('kuyruk',this)">🏦 Kuyruk Sistemi (G/G/1)</button>
     <button class="tab-btn" onclick="switchTab('kuyruk2',this)">🏦🏦 Kuyruk Sistemi (G/G/2)</button>
+    <button class="tab-btn" onclick="switchTab('sozel',this)">📝 Sözel Sorular</button>
   </div>
 </div>
 
@@ -512,6 +513,95 @@ import random
 
 </div>
 </div>
+<!-- ══════ SÖZEL SORULAR PANELİ ══════ -->
+<div class="tab-panel" id="panel-sozel">
+<div class="inner" style="max-width:820px;">
+
+  <div class="qs-header" style="margin-top:0.3rem;">
+    <h2>Sözel Soru Çalışma Aracı</h2>
+    <p>Soruyu oku → Cevabını yaz → Kontrol et → İstersen model cevabı gör</p>
+  </div>
+
+  <!-- İlerleme çubuğu -->
+  <div class="card" style="padding:1rem 1.6rem;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.6rem;">
+      <span style="font-size:0.82rem;font-weight:700;color:var(--muted);">SORU İLERLEMESİ</span>
+      <span id="sz-progress-label" style="font-size:0.82rem;font-weight:700;color:var(--accent);">1 / 10</span>
+    </div>
+    <div style="background:var(--surface2);border-radius:99px;height:7px;overflow:hidden;">
+      <div id="sz-progress-bar" style="height:100%;border-radius:99px;background:linear-gradient(90deg,#b83030,#e05050);transition:width 0.4s;" ></div>
+    </div>
+    <div style="display:flex;gap:0.4rem;flex-wrap:wrap;margin-top:0.9rem;" id="sz-dots"></div>
+  </div>
+
+  <!-- Soru kartı -->
+  <div class="card">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;margin-bottom:1rem;">
+      <div>
+        <span id="sz-qnum" style="font-size:0.73rem;font-weight:700;color:var(--muted);letter-spacing:1px;display:block;margin-bottom:0.4rem;">SORU 1</span>
+        <div id="sz-qtext" style="font-size:1rem;font-weight:600;color:var(--text);line-height:1.65;"></div>
+      </div>
+      <span id="sz-qtag" style="flex-shrink:0;font-size:0.72rem;font-weight:700;padding:3px 10px;border-radius:99px;"></span>
+    </div>
+
+    <textarea id="sz-answer"
+      placeholder="Cevabınızı buraya yazın…"
+      style="width:100%;min-height:160px;background:#0d1117;color:#f0e0e0;border:1.5px solid var(--border);border-radius:10px;padding:0.9rem 1rem;font-size:0.92rem;line-height:1.7;resize:vertical;outline:none;font-family:'Segoe UI',system-ui,sans-serif;transition:border-color 0.15s;"
+      oninput="szClearFeedback()"
+      onfocus="this.style.borderColor='var(--accent)'"
+      onblur="this.style.borderColor='var(--border)'"></textarea>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="szCheck()">✓ Cevabı Kontrol Et</button>
+      <button class="btn btn-secondary" onclick="szShowAnswer()">📖 Model Cevabı Göster</button>
+      <button class="btn btn-secondary" onclick="szClear()">✕ Temizle</button>
+    </div>
+  </div>
+
+  <!-- Geri bildirim -->
+  <div id="sz-feedback" style="display:none;">
+
+    <!-- Skor -->
+    <div class="card" id="sz-score-card">
+      <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.5rem;">
+        <span style="font-size:0.88rem;font-weight:600;color:var(--text);">Puan:</span>
+        <div style="flex:1;background:var(--surface2);border-radius:99px;height:8px;overflow:hidden;">
+          <div id="sz-score-bar" style="height:100%;border-radius:99px;transition:width 0.5s;"></div>
+        </div>
+        <span id="sz-score-num" style="font-size:0.9rem;font-weight:700;color:var(--text);min-width:3rem;text-align:right;"></span>
+      </div>
+      <div id="sz-verdict" style="font-size:0.9rem;font-weight:700;margin-top:0.3rem;"></div>
+    </div>
+
+    <!-- Bulunan anahtar kavramlar -->
+    <div class="card" id="sz-found-card" style="display:none;">
+      <div class="card-title" style="color:#34d399;">✅ Doğru yakaladığın kavramlar</div>
+      <div id="sz-found-list" style="display:flex;flex-wrap:wrap;gap:0.5rem;margin-top:0.2rem;"></div>
+    </div>
+
+    <!-- Eksik kavramlar -->
+    <div class="card" id="sz-missing-card" style="display:none;">
+      <div class="card-title" style="color:#f87171;">❌ Eksik kalan kavramlar</div>
+      <div id="sz-missing-list" style="display:flex;flex-wrap:wrap;gap:0.5rem;margin-top:0.2rem;"></div>
+    </div>
+
+    <!-- Model cevap (isteğe bağlı) -->
+    <div class="card" id="sz-model-card" style="display:none;">
+      <div class="card-title">📋 Model Cevap</div>
+      <div id="sz-model-text" style="font-size:0.9rem;line-height:1.8;color:var(--text);white-space:pre-line;"></div>
+    </div>
+  </div>
+
+  <!-- Navigasyon -->
+  <div style="display:flex;justify-content:space-between;gap:0.8rem;margin-top:0.5rem;">
+    <button class="btn btn-secondary" onclick="szPrev()">← Önceki Soru</button>
+    <button class="btn btn-primary"   onclick="szNext()">Sonraki Soru →</button>
+  </div>
+
+</div>
+</div>
+<!-- ══════ /SÖZEL SORULAR PANELİ ══════ -->
+
 <!-- ══════ /G/G/2 PANELİ ══════ -->
 
 <!-- ══════ JS ══════ -->
@@ -1076,6 +1166,406 @@ function qs2NewQuestion(){
   document.getElementById('qs2-scoreBanner').style.display='none';
 }
 qs2NewQuestion();
+
+// ══════════════════════════════════════════════════
+// SÖZEL SORULAR PANELİ
+// ══════════════════════════════════════════════════
+const SZ_SORULAR = [
+  {
+    no: 1,
+    kategori: "Temel Kavram",
+    soru: "Benzetim (simülasyon) nedir? Açıklayınız.",
+    anahtarlar: [
+      { kelime: ["gerçek sistem","gerçek bir sistem"], puan: 2, etiket: "Gerçek sistem" },
+      { kelime: ["model","modeli"], puan: 2, etiket: "Model" },
+      { kelime: ["bilgisayar","bilgisayarda"], puan: 1, etiket: "Bilgisayar ortamı" },
+      { kelime: ["taklit","simüle","kopyala","temsil"], puan: 2, etiket: "Taklit / simülasyon" },
+      { kelime: ["maliyet","pahalı","risk","tehlikeli","imkânsız","zor","mümkün değil"], puan: 2, etiket: "Maliyet/risk nedeni" },
+      { kelime: ["karar","analiz","inceleme","davranış"], puan: 1, etiket: "Karar / analiz" },
+    ],
+    model: `Benzetim (simülasyon); gerçek bir sistemi veya süreci matematiksel ve mantıksal bir modelle taklit eden, bu modelin bilgisayar ortamında çalıştırılarak sistemin davranışını incelemeye yarayan bir yöntemdir.
+
+Gerçek sistemde deney yapmanın;
+• Çok maliyetli olduğu (uçak tasarımı, fabrika kurulumu),
+• Tehlikeli ya da riskli olduğu (nükleer santral, ilaç denemeleri),
+• Fiziksel olarak mümkün olmadığı (gelecekteki bir senaryo, yıkılmış bir sistem)
+
+durumlarda benzetim tercih edilir. Böylece sisteme ait kararlar, gerçek sisteme müdahale edilmeden analiz edilebilir.`
+  },
+  {
+    no: 2,
+    kategori: "Sınıflandırma",
+    soru: "Kesikli benzetim ve sürekli benzetim nedir? Örneklerle açıklayınız.",
+    anahtarlar: [
+      { kelime: ["kesikli","ayrık","discrete"], puan: 2, etiket: "Kesikli benzetim" },
+      { kelime: ["sürekli","continuous"], puan: 2, etiket: "Sürekli benzetim" },
+      { kelime: ["belirli an","belirli zaman","olay","event"], puan: 2, etiket: "Belirli anlarda değişim (kesikli)" },
+      { kelime: ["sürekli değiş","zaman içinde değiş","her an"], puan: 2, etiket: "Sürekli değişim" },
+      { kelime: ["kuyruk","banka","hastane","müşteri","üretim"], puan: 1, etiket: "Kesikli örnek" },
+      { kelime: ["sıvı","su","elektrik","ısı","kimya","hava","akış"], puan: 1, etiket: "Sürekli örnek" },
+    ],
+    model: `KESİKLİ BENZETİM:
+Durum değişkenlerinin yalnızca belirli anlarda (olaylar anında) değiştiği benzetim türüdür. Olaylar arasında sistem durumu sabit kalır.
+Örnek: Banka kuyruk sistemi (müşteri gelişi ve ayrılışı olaylarında durum değişir), fabrika üretim hattı, hastane acil servisi.
+
+SÜREKLİ BENZETİM:
+Durum değişkenlerinin zaman içinde sürekli olarak değiştiği benzetim türüdür. Diferansiyel denklemlerle modellenir.
+Örnek: Bir tanktan akan suyun miktarı, elektrik devrelerindeki akım, kimyasal reaksiyonlardaki konsantrasyon değişimi, hava durumu modelleri.
+
+TEMEL FARK: Kesiklide sistem belirli olaylarla adım adım ilerler; süreklideyse sistem her an değişim içindedir.`
+  },
+  {
+    no: 3,
+    kategori: "Temel Kavram",
+    soru: "Benzetimin avantajları ve dezavantajları nelerdir?",
+    anahtarlar: [
+      { kelime: ["avantaj","üstünlük","yarar","fayda"], puan: 1, etiket: "Avantaj başlığı" },
+      { kelime: ["dezavantaj","sakınca","eksik","sınırlılık"], puan: 1, etiket: "Dezavantaj başlığı" },
+      { kelime: ["maliyet","ucuz","pahalı olmayan"], puan: 1, etiket: "Maliyet avantajı" },
+      { kelime: ["risk","tehlike","güvenli"], puan: 1, etiket: "Risk azaltma" },
+      { kelime: ["zaman","hızlı","yavaş"], puan: 1, etiket: "Zaman" },
+      { kelime: ["kesin değil","yaklaşık","tam sonuç değil","hata","yanıltıcı"], puan: 2, etiket: "Kesin sonuç vermez (dezavantaj)" },
+      { kelime: ["model","doğrulama","geçerlilik"], puan: 1, etiket: "Model geçerliliği sorunu" },
+      { kelime: ["uzman","uzmanlık","bilgi gerek"], puan: 1, etiket: "Uzmanlık gerektirir" },
+    ],
+    model: `AVANTAJLARI:
+• Gerçek sisteme zarar vermeden deney yapılabilir.
+• Tehlikeli ya da pahalı senaryolar güvenle test edilebilir.
+• Yıllar sürecek süreçler kısa sürede simüle edilebilir (zaman sıkıştırma).
+• Farklı alternatifler karşılaştırılabilir.
+• Karmaşık sistemler analitik yöntemlerle çözülemese bile simüle edilebilir.
+
+DEZAVANTAJLARI:
+• Kesin/optimal sonuç vermez; sadece yaklaşık tahmin sunar.
+• Model kurma, doğrulama ve geçerli kılma süreci zaman ve uzmanlık gerektirir.
+• Hatalı kurulan model yanıltıcı sonuçlar doğurur.
+• Büyük sistemlerde bilgisayar süresi ve maliyeti yüksek olabilir.
+• Yöneticiler sonuçları gerçek gibi yorumlayabilir (hatalı güven).`
+  },
+  {
+    no: 4,
+    kategori: "Yöntem",
+    soru: "Monte Carlo simülasyonu nedir? Ne zaman kullanılır?",
+    anahtarlar: [
+      { kelime: ["monte carlo"], puan: 2, etiket: "Monte Carlo adı" },
+      { kelime: ["rassal","rastgele","random"], puan: 2, etiket: "Rastgele sayı kullanımı" },
+      { kelime: ["olasılık","ihtimal","dağılım"], puan: 2, etiket: "Olasılık dağılımı" },
+      { kelime: ["statik","zaman bağımsız","dinamik değil"], puan: 1, etiket: "Statik yapı" },
+      { kelime: ["tekrar","iterasyon","deneme","çok sayıda"], puan: 1, etiket: "Tekrarlı deneme" },
+      { kelime: ["analitik","matematiksel çözüm yok","karmaşık"], puan: 1, etiket: "Analitik çözümün zor olduğu durumlar" },
+    ],
+    model: `Monte Carlo simülasyonu; rassal (rastgele) sayılar ve olasılık dağılımları kullanarak belirsizlik içeren problemlerin yaklaşık çözümünü bulan bir simülasyon tekniğidir.
+
+TEMEL MANTIK:
+Problemi çok sayıda (yüzlerce-binlerce) rassal deneme ile tekrarlayıp sonuçların ortalamasını almak.
+
+KULLANILDIĞI DURUMLAR:
+• Analitik (matematiksel) çözümün çok karmaşık ya da imkânsız olduğu durumlar.
+• Sonucun kesin değil, olasılıksal olduğu sistemler.
+• Zaman boyutu olmayan (statik) olasılık problemleri.
+
+ÖRNEK: Bir fabrikada parçaların ölçüm hatalarının son ürün kalitesine etkisini hesaplamak, proje tamamlanma süresinin olasılık dağılımını bulmak.`
+  },
+  {
+    no: 5,
+    kategori: "Yöntem",
+    soru: "Benzetimde rassal sayı nedir ve nasıl kullanılır?",
+    anahtarlar: [
+      { kelime: ["rassal sayı","rastgele sayı","random number"], puan: 2, etiket: "Rassal sayı tanımı" },
+      { kelime: ["0 ile 1","00-99","iki haneli","eşit olasılık","uniform"], puan: 2, etiket: "Dağılım (0-1 arası)" },
+      { kelime: ["dağılım","tablo","aralık","eşleştir"], puan: 2, etiket: "Dağılım tablosuna eşleştirme" },
+      { kelime: ["olasılık","ihtimal"], puan: 1, etiket: "Olasılık ile bağlantı" },
+      { kelime: ["simüle","değer üret","atama"], puan: 1, etiket: "Değer üretme amacı" },
+    ],
+    model: `RASSAL SAYI NEDİR:
+Rassal sayı; 0 ile 1 arasında (veya 00-99 arasında iki basamaklı tam sayı olarak) eşit olasılıkla seçilen, birbirinden bağımsız sayılardır. Hiçbir sayı diğerinden daha olası değildir.
+
+NASIL KULLANILIR:
+1. Sistemin olasılık dağılımı belirlenir (örn. varış süresi dağılımı).
+2. Her olasılık değerine bir rassal sayı aralığı atanır.
+   (Örn: P=0.30 → 00-29 arası 30 sayıya karşılık gelir)
+3. Simülasyonda bir rassal sayı üretilir ve hangi aralığa düştüğüne bakılarak o olayın değeri belirlenir.
+
+ÖRNEK: Rassal sayı 47 → 30-69 aralığında → Varış süresi = 2 dk`
+  },
+  {
+    no: 6,
+    kategori: "Temel Kavram",
+    soru: "Benzetim modelinin doğrulanması (verification) ve geçerli kılınması (validation) arasındaki fark nedir?",
+    anahtarlar: [
+      { kelime: ["doğrulama","verification"], puan: 2, etiket: "Doğrulama (verification)" },
+      { kelime: ["geçerli kılma","validation","geçerliliği"], puan: 2, etiket: "Geçerli kılma (validation)" },
+      { kelime: ["kod","programlama","yazılım","hatasız"], puan: 1, etiket: "Kodun doğruluğu (verification)" },
+      { kelime: ["gerçek sistem","gerçekle uyum","doğru temsil"], puan: 2, etiket: "Gerçek sistemle uyum (validation)" },
+      { kelime: ["model","tasarım"], puan: 1, etiket: "Model" },
+    ],
+    model: `DOĞRULAMA (Verification):
+"Modeli doğru mu KURDUK?" sorusunu yanıtlar.
+Modelin tasarımına uygun şekilde programlandığını kontrol etme işlemidir.
+Yani bilgisayar kodu, matematiksel/mantıksal modeli hatasız temsil ediyor mu?
+→ Kod hataları, mantık hataları, formül yanlışlıkları aranır.
+
+GEÇERLİ KILMA (Validation):
+"DOĞRU modeli mi kurduk?" sorusunu yanıtlar.
+Modelin gerçek sistemi yeterince doğru temsil edip etmediğini kontrol etme işlemidir.
+Yani model çıktıları, gerçek sistem verileriyle örtüşüyor mu?
+→ Model sonuçları ile gerçek gözlemler karşılaştırılır.
+
+KISA ÖZET: Verification = kodu doğrula | Validation = gerçekle karşılaştır`
+  },
+  {
+    no: 7,
+    kategori: "Sınıflandırma",
+    soru: "Deterministik benzetim ve stokastik benzetim arasındaki farkı açıklayınız.",
+    anahtarlar: [
+      { kelime: ["deterministik"], puan: 2, etiket: "Deterministik" },
+      { kelime: ["stokastik","olasılıksal","rassal","rastgele"], puan: 2, etiket: "Stokastik / Rassal" },
+      { kelime: ["aynı sonuç","tek sonuç","değişmez","sabit"], puan: 2, etiket: "Deterministik → aynı sonuç" },
+      { kelime: ["farklı sonuç","değişen","belirsiz"], puan: 2, etiket: "Stokastik → farklı sonuç" },
+      { kelime: ["rassal sayı","random"], puan: 1, etiket: "Rassal sayı kullanımı" },
+    ],
+    model: `DETERMİNİSTİK BENZETİM:
+Modelde hiçbir rassal (rastgele) değişken yoktur. Aynı girdiler her çalıştırmada aynı çıktıyı üretir.
+Belirsizlik içermeyen, sabit parametreli sistemler için kullanılır.
+Örnek: Belirli bir üretim hattının sabit kapasiteyle günlük çıktısını hesaplamak.
+
+STOKASTİK BENZETİM:
+En az bir rassal değişken içerir. Her çalıştırmada sonuçlar farklılık gösterebilir.
+Belirsizlik ve olasılıksal değişkenlik içeren gerçek hayat sistemlerini daha iyi temsil eder.
+Rassal sayılar aracılığıyla olasılık dağılımlarından değerler örneklenir.
+Örnek: Müşteri geliş süreleri rassal olan bir banka kuyruk simülasyonu.
+
+SONUÇ: Gerçek sistemlerin büyük çoğunluğu stokastiktir.`
+  },
+  {
+    no: 8,
+    kategori: "Yöntem",
+    soru: "Kuyruk sistemi simülasyonunda hangi temel büyüklükler hesaplanır? Açıklayınız.",
+    anahtarlar: [
+      { kelime: ["ortalama bekleme","bekleme süresi"], puan: 2, etiket: "Ort. bekleme süresi" },
+      { kelime: ["sistemde kalma","sistemde geçirilen"], puan: 2, etiket: "Sistemde kalma süresi" },
+      { kelime: ["kullanım oranı","utilization","meşguliyet"], puan: 2, etiket: "Kullanım oranı" },
+      { kelime: ["kuyruk","queue"], puan: 1, etiket: "Kuyruk" },
+      { kelime: ["boş kalma","idle"], puan: 1, etiket: "Boş kalma süresi" },
+      { kelime: ["maksimum","en uzun","en fazla"], puan: 1, etiket: "Maksimum bekleme" },
+    ],
+    model: `Kuyruk sistemi simülasyonunda hesaplanan temel büyüklükler:
+
+1. ORTALAMA KUYRUKTA BEKLEME SÜRESİ:
+   Müşterilerin servise alınmayı bekledikleri ortalama süre.
+   = Toplam Kuyruk Bekleme / Müşteri Sayısı
+
+2. ORTALAMA SİSTEMDE KALMA SÜRESİ:
+   Müşterilerin sisteme giriş ile çıkış arasında geçirdiği ortalama süre (bekleme + servis).
+   = Toplam Sistemde Kalma / Müşteri Sayısı
+
+3. MAKSİMUM KUYRUK BEKLEME SÜRESİ:
+   En uzun kuyrukta bekleme süresine sahip müşterinin bekleme süresi.
+
+4. SUNUCU (VEZNE) KULLANIM ORANI:
+   Sunucunun toplam sürenin ne kadarında meşgul olduğu.
+   = Toplam Servis Süresi / Toplam Simülasyon Süresi × 100
+
+5. SUNUCUNUN BOŞ KALMA SÜRESİ:
+   Sunucunun müşteri beklerken boş kaldığı toplam süre.`
+  },
+  {
+    no: 9,
+    kategori: "Temel Kavram",
+    soru: "Benzetimde 'ısınma periyodu' (warm-up period) nedir ve neden gereklidir?",
+    anahtarlar: [
+      { kelime: ["ısınma","warm-up","başlangıç"], puan: 2, etiket: "Isınma periyodu" },
+      { kelime: ["kararlı hal","steady state","denge","dengeye ulaş"], puan: 2, etiket: "Kararlı hal" },
+      { kelime: ["başlangıç koşulu","boş","ilk durum"], puan: 2, etiket: "Başlangıç koşulunun etkisi" },
+      { kelime: ["atılır","dışarıda bırakılır","kullanılmaz","değerlendirme dışı"], puan: 2, etiket: "Isınma verisi atılır" },
+      { kelime: ["hata","yanlış sonuç","yanıltıcı"], puan: 1, etiket: "Yanıltıcı sonuç riski" },
+    ],
+    model: `ISINMA PERİYODU NEDİR:
+Benzetim başladığında sistem genellikle boş (müşteri yok, kuyruk yok) bir durumdan başlar. Bu başlangıç durumu gerçek sistemin normal çalışma durumunu yansıtmaz.
+
+Sistem, gerçek çalışma koşullarına (kararlı hale / steady state'e) ulaşana kadar geçen bu başlangıç dönemine ısınma periyodu denir.
+
+NEDEN GEREKLİDİR:
+Eğer ısınma periyodundaki veriler de analize dahil edilirse, sistem henüz kararlı hale gelmediğinden istatistiksel sonuçlar yanıltıcı olur (örn. bekleme süresi olduğundan düşük çıkabilir).
+
+NE YAPILIR:
+Isınma periyoduna ait gözlemler veri analizine dahil edilmez; sistem kararlı hale ulaştıktan sonraki veriler kullanılır.`
+  },
+  {
+    no: 10,
+    kategori: "Uygulama",
+    soru: "G/G/1 ve G/G/2 kuyruk sistemleri arasındaki temel fark nedir? G/G/2'de müşteri hangi kurala göre vezneye yönlendirilir?",
+    anahtarlar: [
+      { kelime: ["tek kanal","tek sunucu","tek vezne","bir vezne"], puan: 2, etiket: "G/G/1 → tek sunucu" },
+      { kelime: ["iki kanal","iki sunucu","iki vezne","çift kanal"], puan: 2, etiket: "G/G/2 → iki sunucu" },
+      { kelime: ["en erken","en kısa","boşalan","uygun"], puan: 3, etiket: "En erken boşalan vezne kuralı" },
+      { kelime: ["kullanım oranı","kapasite","2 ile çarp"], puan: 1, etiket: "Kullanım oranı farkı (÷2×simEnd)" },
+      { kelime: ["paralel","eş zamanlı","aynı anda"], puan: 1, etiket: "Paralel servis" },
+    ],
+    model: `G/G/1 vs G/G/2 FARKI:
+
+G/G/1 (Tek Kanallı):
+• Sistemde yalnızca 1 sunucu (vezne) bulunur.
+• Sunucu meşgulse müşteri kuyrukta bekler.
+• Kullanım Oranı = Toplam Servis / Simülasyon Bitiş × 100
+
+G/G/2 (Çift Kanallı):
+• Sistemde 2 sunucu (V1 ve V2) eş zamanlı hizmet verir.
+• Her iki sunucu da meşgulse müşteri kuyrukta bekler.
+• Kullanım Oranı = Toplam Servis / (2 × Simülasyon Bitiş) × 100
+
+G/G/2'DE ATAMA KURALI:
+Müşteri geldiğinde V1 ve V2'nin bitiş zamanları karşılaştırılır:
+→ V1 bitiş zamanı ≤ V2 bitiş zamanı ise müşteri V1'e atanır.
+→ V2 bitiş zamanı < V1 bitiş zamanı ise müşteri V2'ye atanır.
+Yani her müşteri EN ERKEN BOŞALACAK vezneye yönlendirilir.
+
+İki vezne boşsa → V1 önceliklidir.`
+  },
+];
+
+let szAktif = 0;
+const szDurumlar = new Array(SZ_SORULAR.length).fill(null); // null=boş, 'ok'=doğru, 'wrong'=yanlış
+
+function szRender() {
+  const q = SZ_SORULAR[szAktif];
+  document.getElementById('sz-qnum').textContent   = `SORU ${q.no}`;
+  document.getElementById('sz-qtext').textContent  = q.soru;
+  const tag = document.getElementById('sz-qtag');
+  tag.textContent   = q.kategori;
+  tag.style.background = 'rgba(224,80,80,0.15)';
+  tag.style.color      = 'var(--accent)';
+  document.getElementById('sz-progress-label').textContent = `${szAktif+1} / ${SZ_SORULAR.length}`;
+  document.getElementById('sz-progress-bar').style.width   = `${((szAktif+1)/SZ_SORULAR.length)*100}%`;
+  szClearFeedback();
+  document.getElementById('sz-answer').value = '';
+  szRenderDots();
+}
+
+function szRenderDots() {
+  const container = document.getElementById('sz-dots');
+  container.innerHTML = '';
+  SZ_SORULAR.forEach((q, i) => {
+    const dot = document.createElement('button');
+    dot.textContent = q.no;
+    dot.style.cssText = `
+      width:28px;height:28px;border-radius:6px;border:1.5px solid;
+      font-size:0.75rem;font-weight:700;cursor:pointer;transition:all 0.15s;
+    `;
+    if(i === szAktif) {
+      dot.style.background = 'var(--accent)'; dot.style.color = '#fff'; dot.style.borderColor = 'var(--accent)';
+    } else if(szDurumlar[i] === 'ok') {
+      dot.style.background = 'rgba(52,211,153,0.15)'; dot.style.color = '#34d399'; dot.style.borderColor = '#34d399';
+    } else if(szDurumlar[i] === 'wrong') {
+      dot.style.background = 'rgba(248,113,113,0.15)'; dot.style.color = '#f87171'; dot.style.borderColor = '#f87171';
+    } else {
+      dot.style.background = 'var(--surface2)'; dot.style.color = 'var(--muted)'; dot.style.borderColor = 'var(--border)';
+    }
+    dot.onclick = () => { szAktif = i; szRender(); };
+    container.appendChild(dot);
+  });
+}
+
+function szNormalize(text) {
+  return text.toLowerCase()
+    .replace(/ğ/g,'g').replace(/ü/g,'u').replace(/ş/g,'s')
+    .replace(/ı/g,'i').replace(/ö/g,'o').replace(/ç/g,'c');
+}
+
+function szCheck() {
+  const cevap = document.getElementById('sz-answer').value.trim();
+  if(!cevap) { alert('Lütfen önce cevabınızı yazın.'); return; }
+
+  const q = SZ_SORULAR[szAktif];
+  const norm = szNormalize(cevap);
+
+  let toplamPuan = 0, maxPuan = 0;
+  const bulunan = [], eksik = [];
+
+  q.anahtarlar.forEach(a => {
+    maxPuan += a.puan;
+    const var_ = a.kelime.some(k => norm.includes(szNormalize(k)));
+    if(var_) { toplamPuan += a.puan; bulunan.push(a.etiket); }
+    else      { eksik.push(a.etiket); }
+  });
+
+  const oran = Math.round(toplamPuan / maxPuan * 100);
+  szDurumlar[szAktif] = oran >= 60 ? 'ok' : 'wrong';
+
+  // Skor bar
+  const bar = document.getElementById('sz-score-bar');
+  bar.style.width = oran + '%';
+  bar.style.background = oran >= 70
+    ? 'linear-gradient(90deg,#059669,#34d399)'
+    : oran >= 40
+    ? 'linear-gradient(90deg,#d97706,#fbbf24)'
+    : 'linear-gradient(90deg,#dc2626,#f87171)';
+  document.getElementById('sz-score-num').textContent = `${oran}%`;
+
+  const verdict = document.getElementById('sz-verdict');
+  if(oran >= 80) { verdict.style.color='#34d399'; verdict.textContent='🎉 Harika! Cevabın çok iyi.'; }
+  else if(oran >= 60) { verdict.style.color='#fbbf24'; verdict.textContent='👍 İyi gidiyorsun, birkaç kavram eksik.'; }
+  else if(oran >= 30) { verdict.style.color='#f87171'; verdict.textContent='📚 Temel kavramları gözden geçir.'; }
+  else { verdict.style.color='#f87171'; verdict.textContent='❌ Model cevabı incelemeyi öneririm.'; }
+
+  // Bulunan kavramlar
+  const fc = document.getElementById('sz-found-card');
+  const fl = document.getElementById('sz-found-list');
+  if(bulunan.length > 0) {
+    fl.innerHTML = bulunan.map(b =>
+      `<span style="background:rgba(52,211,153,0.12);color:#34d399;border:1px solid rgba(52,211,153,0.3);border-radius:6px;padding:3px 10px;font-size:0.81rem;font-weight:600;">${b}</span>`
+    ).join('');
+    fc.style.display = 'block';
+  } else { fc.style.display = 'none'; }
+
+  // Eksik kavramlar
+  const mc = document.getElementById('sz-missing-card');
+  const ml = document.getElementById('sz-missing-list');
+  if(eksik.length > 0) {
+    ml.innerHTML = eksik.map(e =>
+      `<span style="background:rgba(248,113,113,0.12);color:#f87171;border:1px solid rgba(248,113,113,0.3);border-radius:6px;padding:3px 10px;font-size:0.81rem;font-weight:600;">${e}</span>`
+    ).join('');
+    mc.style.display = 'block';
+  } else { mc.style.display = 'none'; }
+
+  document.getElementById('sz-model-card').style.display = 'none';
+  document.getElementById('sz-feedback').style.display = 'block';
+  szRenderDots();
+  document.getElementById('sz-feedback').scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+function szShowAnswer() {
+  const q = SZ_SORULAR[szAktif];
+  document.getElementById('sz-model-text').textContent = q.model;
+  document.getElementById('sz-model-card').style.display = 'block';
+  document.getElementById('sz-feedback').style.display  = 'block';
+  document.getElementById('sz-score-card').style.display = 'none';
+  document.getElementById('sz-found-card').style.display = 'none';
+  document.getElementById('sz-missing-card').style.display = 'none';
+  document.getElementById('sz-model-card').scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+function szClearFeedback() {
+  document.getElementById('sz-feedback').style.display = 'none';
+  document.getElementById('sz-score-card').style.display = 'block';
+  document.getElementById('sz-model-card').style.display = 'none';
+}
+
+function szClear() {
+  document.getElementById('sz-answer').value = '';
+  szClearFeedback();
+}
+
+function szNext() {
+  if(szAktif < SZ_SORULAR.length - 1) { szAktif++; szRender(); }
+  document.getElementById('panel-sozel').scrollIntoView({ behavior:'smooth', block:'start' });
+}
+function szPrev() {
+  if(szAktif > 0) { szAktif--; szRender(); }
+  document.getElementById('panel-sozel').scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+szRender();
 
 // ── Global JS Tooltip (tablo içi overflow sorununu çözer) ──
 (function(){
