@@ -277,7 +277,8 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
   <p>Üniversite Benzetim Modelleri Dersi — Sınava hazırlık aracı</p>
   <div class="tab-bar">
     <button class="tab-btn active" onclick="switchTab('python',this)">🐍 Python Simülasyon Soruları</button>
-    <button class="tab-btn" onclick="switchTab('kuyruk',this)">🏦 Kuyruk Sistemi Simülasyonu</button>
+    <button class="tab-btn" onclick="switchTab('kuyruk',this)">🏦 Kuyruk Sistemi (G/G/1)</button>
+    <button class="tab-btn" onclick="switchTab('kuyruk2',this)">🏦🏦 Kuyruk Sistemi (G/G/2)</button>
   </div>
 </div>
 
@@ -444,6 +445,74 @@ import random
 
 </div>
 </div>
+
+<!-- ══════ G/G/2 PANELİ ══════ -->
+<div class="tab-panel" id="panel-kuyruk2">
+<div class="inner">
+
+  <div class="qs-header" style="margin-top:0.3rem;">
+    <h2>Çift Kanallı Kuyruk Sistemi Simülasyonu (G/G/2)</h2>
+    <p>2 vezneli sistem — Soruyu oku → Tabloyu doldur → Kontrol et → Çözümü incele</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title" id="qs2-qTitle">Soru yükleniyor…</div>
+    <div class="scenario-desc" id="qs2-qDesc"></div>
+    <div class="dist-grid">
+      <div>
+        <div class="dist-label">Varışlar Arası Süre (dakika)</div>
+        <table id="qs2-tblArrival"></table>
+      </div>
+      <div>
+        <div class="dist-label">Servis Süresi (dakika)</div>
+        <table id="qs2-tblService"></table>
+      </div>
+    </div>
+    <div class="rng-table-wrap">
+      <div class="dist-label" style="margin-bottom:0.45rem;">Müşteriler için üretilmiş rassal sayılar</div>
+      <table id="qs2-tblRNG" style="max-width:420px;"></table>
+    </div>
+    <div class="btn-row" style="margin-top:0.3rem;">
+      <button class="btn btn-secondary" onclick="qs2NewQuestion()">🔄 Yeni Soru Üret</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Simülasyon Tablosu</div>
+    <p style="font-size:0.79rem;color:var(--muted);margin-bottom:0.8rem;">Her müşteri <b>en erken boşalan vezneye</b> yönlendirilir. Başlıklardaki <span style="color:var(--accent);">?</span> işaretlerine fareyle gelin.</p>
+    <div class="sim-wrap">
+      <table class="sim-table" id="qs2-tblSim"></table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Özet İstatistikler</div>
+    <div class="results-grid" id="qs2-resultsGrid"></div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="qs2CheckAnswers()">✓ Cevapları Kontrol Et</button>
+      <button class="btn btn-green"   onclick="qs2ShowSolution()">📖 Detaylı Çözümü Göster</button>
+    </div>
+    <div id="qs2-scoreBanner" style="display:none;"></div>
+  </div>
+
+  <div class="card" id="qs2-solutionCard" style="display:none;">
+    <div class="card-title">Adım Adım Detaylı Çözüm</div>
+    <div id="qs2-solutionSteps"></div>
+    <div class="formula-box">
+      <h3>📐 G/G/2 Temel Kurallar</h3>
+      <div>Her müşteri → <span class="code">en erken boşalan vezneye</span> atanır (V1 veya V2)</div>
+      <div>Varış Zamanı<sub>i</sub> = Varış<sub>i-1</sub> + Varışlararası Süre<sub>i</sub> &nbsp;<span class="code">(1. müşteri → 0)</span></div>
+      <div>Servis Başlangıç = <span class="code">max(Varış Zamanı, Atanan Veznenin Bitiş Zamanı)</span></div>
+      <div>Servis Bitiş = <span class="code">Servis Başlangıç + Servis Süresi</span></div>
+      <div>Kuyrukta Bekleme = <span class="code">Servis Başlangıç − Varış Zamanı</span></div>
+      <div>Sistemde Kalma = <span class="code">Servis Bitiş − Varış Zamanı</span></div>
+      <div>Kullanım Oranı = <span class="code">Toplam Servis ÷ (2 × Son Bitiş) × 100</span></div>
+    </div>
+  </div>
+
+</div>
+</div>
+<!-- ══════ /G/G/2 PANELİ ══════ -->
 
 <!-- ══════ JS ══════ -->
 <script>
@@ -796,6 +865,217 @@ function qsNewQuestion(){
   document.getElementById('qs-scoreBanner').style.display='none';
 }
 qsNewQuestion();
+
+// ══════════════════════════════════════════════════
+// G/G/2 PANELİ
+// ══════════════════════════════════════════════════
+const QS2_SCENARIOS=[
+  {name:'Banka Şubesi',    desc:(n)=>`Bir banka şubesinde 2 vezne (V1 ve V2) bulunmaktadır. Sisteme gelen ilk ${n} müşteri için kuyruk simülasyonu yapılacaktır. İlk müşteri t=0 anında gelmektedir. Her müşteri en erken boşalan vezneye yönlendirilir.`},
+  {name:'Hastane Kayıt',   desc:(n)=>`Bir hastane kayıt biriminde 2 gişe (V1 ve V2) bulunmaktadır. Sisteme gelen ilk ${n} hasta için simülasyon yapılacaktır. İlk hasta t=0 anında gelmektedir. Her hasta en erken boşalan gişeye yönlendirilir.`},
+  {name:'Market Kasa',     desc:(n)=>`Bir markette 2 kasa (V1 ve V2) açık bulunmaktadır. Sisteme gelen ilk ${n} müşteri için simülasyon yapılacaktır. İlk müşteri t=0 anında gelmektedir. Her müşteri en erken boşalan kasaya yönlendirilir.`},
+  {name:'Havalimanı Check-in', desc:(n)=>`Bir havalimanı check-in alanında 2 gişe (V1 ve V2) hizmet vermektedir. Sisteme gelen ilk ${n} yolcu için simülasyon yapılacaktır. İlk yolcu t=0 anında gelmektedir. Her yolcu en erken boşalan gişeye yönlendirilir.`},
+  {name:'Teknik Servis',   desc:(n)=>`Bir teknik serviste 2 teknisyen (V1 ve V2) görev yapmaktadır. Sisteme gelen ilk ${n} cihaz için onarım simülasyonu yapılacaktır. İlk cihaz t=0 anında getirilmektedir. Her cihaz en erken uygun teknisyene yönlendirilir.`},
+];
+let QS2=null;
+
+function qs2Generate(){
+  const sc=QS2_SCENARIOS[Math.floor(Math.random()*QS2_SCENARIOS.length)];
+  const nC=qsRand(5,8);
+  const aVals=pick([[1,2,3],[1,2,3,4],[2,3,4],[1,2,4],[2,3,5]]);
+  const sVals=pick([[2,3,4],[2,3,5],[3,4,5],[2,4,6],[1,2,3,4]]);
+  const aDist=qsMakeDist(aVals), sDist=qsMakeDist(sVals);
+  const rnA=Array.from({length:nC},()=>qsRn());
+  const rnS=Array.from({length:nC},()=>qsRn());
+
+  let v1End=0, v2End=0;
+  const customers=[];
+
+  for(let i=0;i<nC;i++){
+    const ia = i===0 ? null : qsLookup(aDist, rnA[i]);
+    const sd = qsLookup(sDist, rnS[i]);
+    const at = i===0 ? 0 : customers[i-1].at + ia;
+
+    let assigned, ss;
+    if(v1End <= v2End){
+      assigned=1;
+      ss=Math.max(at, v1End);
+      v1End=ss+sd;
+    } else {
+      assigned=2;
+      ss=Math.max(at, v2End);
+      v2End=ss+sd;
+    }
+    const se=ss+sd, wq=ss-at, tis=se-at;
+    customers.push({no:i+1,rnA:rnA[i],rnS:rnS[i],ia,at,sd,assigned,ss,se,wq,tis});
+  }
+
+  const totalSd   = customers.reduce((s,c)=>s+c.sd,0);
+  const simEnd    = Math.max(v1End, v2End);
+  const util      = totalSd/(2*simEnd)*100;
+  const avgWq     = customers.reduce((s,c)=>s+c.wq,0)/nC;
+  const avgTis    = customers.reduce((s,c)=>s+c.tis,0)/nC;
+  const maxWq     = Math.max(...customers.map(c=>c.wq));
+  // idle: toplam kapasite - toplam servis
+  const totalIdle = 2*simEnd - totalSd;
+
+  return{sc,nC,aDist,sDist,rnA,rnS,customers,totalSd,simEnd,util,avgWq,avgTis,maxWq,totalIdle,v1End,v2End};
+}
+
+function qs2RenderArrivalDist(dist){
+  const t=document.getElementById('qs2-tblArrival');
+  t.innerHTML=`<tr><th>Alternatif</th><th>Süre (dk)</th><th>Olasılık</th><th>Rassal Sayı Aralığı</th></tr>`;
+  dist.forEach((r,i)=>t.innerHTML+=`<tr><td>A${i+1}</td><td>${r.value}</td><td>${r.prob}</td><td>${qsPad(r.lo)}–${qsPad(r.hi)}</td></tr>`);
+}
+function qs2RenderServiceDist(dist){
+  const t=document.getElementById('qs2-tblService');
+  t.innerHTML=`<tr><th>Alternatif</th><th>Süre (dk)</th><th>Olasılık</th><th>Rassal Sayı Aralığı</th></tr>`;
+  dist.forEach((r,i)=>t.innerHTML+=`<tr><td>S${i+1}</td><td>${r.value}</td><td>${r.prob}</td><td>${qsPad(r.lo)}–${qsPad(r.hi)}</td></tr>`);
+}
+function qs2RenderRNG(q){
+  const t=document.getElementById('qs2-tblRNG');
+  t.innerHTML=`<tr><th>Müşteri No</th><th>Rassal Sayı (Varışlararası)</th><th>Rassal Sayı (Servis)</th></tr>`;
+  q.customers.forEach(c=>t.innerHTML+=`<tr><td>${c.no}</td><td>${c.rnA}</td><td>${c.rnS}</td></tr>`);
+}
+function qs2RenderSimTable(q){
+  const t=document.getElementById('qs2-tblSim');
+  const TH=(label,tip)=>`<th><span class="tip-wrap">${label} <span class="tip" data-tip="${tip}">?</span></span></th>`;
+  t.innerHTML=`<tr>
+    <th>Müşteri No</th>
+    ${TH('Varışlararası Süre','Rassal sayıyı Varışlar Arası Süre tablosundaki aralıklarla eşleştir → karşılık gelen süreyi yaz.')}
+    ${TH('Varış Zamanı','1. müşteri → 0\nDiğerleri → Önceki Varış + Varışlararası Süre')}
+    ${TH('Servis Süresi','Rassal sayıyı Servis Süresi tablosundaki aralıklarla eşleştir → karşılık gelen süreyi yaz.')}
+    ${TH('Atanan Vezne','Müşteri, bitiş zamanı daha erken olan vezneye atanır.\nV1 Bitiş ≤ V2 Bitiş → V1\nV2 Bitiş < V1 Bitiş → V2')}
+    ${TH('Servis Başlangıç','max(Varış Zamanı, Atanan Veznenin Son Bitiş Zamanı)')}
+    ${TH('Servis Bitiş','Servis Başlangıç + Servis Süresi')}
+    ${TH('Kuyrukta Bekleme','Servis Başlangıç − Varış Zamanı\nBeklemediyse 0 yaz.')}
+    ${TH('Sistemde Kalma','Servis Bitiş − Varış Zamanı')}
+  </tr>`;
+  q.customers.forEach((c,i)=>{
+    t.innerHTML+=`<tr>
+      <td style="font-weight:700;color:var(--muted);">${c.no}</td>
+      <td>${i===0?`<input disabled value="—">`:`<div><input type="text" id="qs2_ia_${i}" placeholder="?"><span class="correct-hint" id="qs2_h_ia_${i}"></span></div>`}</td>
+      <td>${i===0?`<input disabled value="0">`:`<div><input type="text" id="qs2_at_${i}" placeholder="?"><span class="correct-hint" id="qs2_h_at_${i}"></span></div>`}</td>
+      <td><div><input type="text" id="qs2_sd_${i}" placeholder="?"><span class="correct-hint" id="qs2_h_sd_${i}"></span></div></td>
+      <td><div><input type="text" id="qs2_v_${i}" placeholder="V1/V2"><span class="correct-hint" id="qs2_h_v_${i}"></span></div></td>
+      <td><div><input type="text" id="qs2_ss_${i}" placeholder="?"><span class="correct-hint" id="qs2_h_ss_${i}"></span></div></td>
+      <td><div><input type="text" id="qs2_se_${i}" placeholder="?"><span class="correct-hint" id="qs2_h_se_${i}"></span></div></td>
+      <td><div><input type="text" id="qs2_wq_${i}" placeholder="?"><span class="correct-hint" id="qs2_h_wq_${i}"></span></div></td>
+      <td><div><input type="text" id="qs2_tis_${i}" placeholder="?"><span class="correct-hint" id="qs2_h_tis_${i}"></span></div></td>
+    </tr>`;
+  });
+}
+function qs2RenderResults(){
+  const RL=(text,tip)=>`<label><span class="tip-wrap">${text} <span class="tip" data-tip="${tip}">?</span></span></label>`;
+  document.getElementById('qs2-resultsGrid').innerHTML=`
+    <div class="res-item">${RL('1. Ort. kuyrukta bekleme (dk)','Toplam Bekleme ÷ Müşteri Sayısı')}<input type="text" id="qs2_r_avgWq" placeholder="0.00"><span class="correct-hint" id="qs2_h_avgWq"></span></div>
+    <div class="res-item">${RL('2. Ort. sistemde kalma (dk)','Toplam Sistemde Kalma ÷ Müşteri Sayısı')}<input type="text" id="qs2_r_avgTis" placeholder="0.00"><span class="correct-hint" id="qs2_h_avgTis"></span></div>
+    <div class="res-item">${RL('3. Maks. kuyruk bekleme (dk)','Kuyrukta Bekleme sütununun en büyük değeri')}<input type="text" id="qs2_r_maxWq" placeholder="0"><span class="correct-hint" id="qs2_h_maxWq"></span></div>
+    <div class="res-item">${RL('4. Toplam boş kalma süresi (dk)','2 × Son Bitiş Zamanı − Toplam Servis Süresi\n(İki veznenin toplam boş kaldığı süre)')}<input type="text" id="qs2_r_idle" placeholder="0"><span class="correct-hint" id="qs2_h_idle"></span></div>
+    <div class="res-item" style="grid-column:span 2;">${RL('5. Vezne kullanım oranı (%)','Toplam Servis Süresi ÷ (2 × Son Servis Bitiş Zamanı) × 100')}<input type="text" id="qs2_r_util" placeholder="0.00"><span class="correct-hint" id="qs2_h_util"></span></div>`;
+}
+
+function qs2ChkV(iid,hid,correct){
+  const el=document.getElementById(iid),hl=document.getElementById(hid);
+  if(!el||el.disabled)return true;
+  const val=el.value.trim().toUpperCase();
+  const ok=(val==='V'+correct||val===String(correct));
+  el.classList.remove('correct','wrong');el.classList.add(ok?'correct':'wrong');
+  if(hl){hl.textContent=ok?'':('✗ Doğru: V'+correct);}
+  return ok;
+}
+function qs2CheckAnswers(){
+  const q=QS2; let ok=0,tot=0;
+  for(let i=0;i<q.nC;i++){
+    const c=q.customers[i];
+    if(i>0){tot++;if(qsChk(`qs2_ia_${i}`,`qs2_h_ia_${i}`,c.ia,0))ok++;tot++;if(qsChk(`qs2_at_${i}`,`qs2_h_at_${i}`,c.at,0))ok++;}
+    tot++;if(qsChk(`qs2_sd_${i}`,`qs2_h_sd_${i}`,c.sd,0))ok++;
+    tot++;if(qs2ChkV(`qs2_v_${i}`,`qs2_h_v_${i}`,c.assigned))ok++;
+    tot++;if(qsChk(`qs2_ss_${i}`,`qs2_h_ss_${i}`,c.ss,0))ok++;
+    tot++;if(qsChk(`qs2_se_${i}`,`qs2_h_se_${i}`,c.se,0))ok++;
+    tot++;if(qsChk(`qs2_wq_${i}`,`qs2_h_wq_${i}`,c.wq,0))ok++;
+    tot++;if(qsChk(`qs2_tis_${i}`,`qs2_h_tis_${i}`,c.tis,0))ok++;
+  }
+  const res=[
+    {id:'qs2_r_avgWq', hid:'qs2_h_avgWq', val:q.avgWq.toFixed(2), tol:0.15},
+    {id:'qs2_r_avgTis',hid:'qs2_h_avgTis',val:q.avgTis.toFixed(2),tol:0.15},
+    {id:'qs2_r_maxWq', hid:'qs2_h_maxWq', val:q.maxWq,            tol:0},
+    {id:'qs2_r_idle',  hid:'qs2_h_idle',  val:q.totalIdle,        tol:0},
+    {id:'qs2_r_util',  hid:'qs2_h_util',  val:q.util.toFixed(2),  tol:0.6},
+  ];
+  for(const r of res){tot++;if(qsChk(r.id,r.hid,r.val,r.tol))ok++;}
+  const pct=Math.round(ok/tot*100);
+  const banner=document.getElementById('qs2-scoreBanner');
+  banner.style.display='block';
+  banner.className='score-banner '+(pct>=80?'score-good':pct>=50?'score-mid':'score-bad');
+  banner.textContent=`${pct>=80?'🎉':pct>=50?'👍':'📚'}  ${ok}/${tot} doğru (${pct}%)  ${pct>=80?'— Harika!':pct>=50?'— Biraz daha çalış.':'— Detaylı çözümü incele!'}`;
+  banner.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function qs2ShowSolution(){
+  const q=QS2;
+  const card=document.getElementById('qs2-solutionCard');
+  card.style.display='block';
+  let html='';
+  let v1End=0, v2End=0;
+  for(let i=0;i<q.nC;i++){
+    const c=q.customers[i];
+    let t=`<b>${c.no}. Müşteri</b><br>`;
+    if(i===0){
+      t+=`İlk müşteri t=0 anında gelir. Servis RN=<b>${c.rnS}</b> → Servis Süresi=<b>${c.sd} dk</b>.<br>`;
+      t+=`Her iki vezne boş → <b>V1</b>'e atanır. <span class="code">SS=max(0,0)=0</span>. Bitiş=${c.se} dk. Bekleme=<b>0 dk</b>. Sistemde=<b>${c.tis} dk</b>.`;
+      v1End=c.se;
+    } else {
+      const prev=q.customers[i-1];
+      t+=`Varış RN=<b>${c.rnA}</b> → Varışlararası=<b>${c.ia} dk</b>. Varış Zamanı=${prev.at}+${c.ia}=<b>${c.at} dk</b>.<br>`;
+      t+=`Servis RN=<b>${c.rnS}</b> → Servis Süresi=<b>${c.sd} dk</b>.<br>`;
+      t+=`Durum: V1 bitiş=<b>${v1End} dk</b>, V2 bitiş=<b>${v2End} dk</b>. `;
+      if(v1End<=v2End){
+        t+=`V1 daha erken (veya eşit) boşalıyor → <b>V1'e atandı</b>.<br>`;
+        t+=`<span class="code">SS=max(${c.at},${v1End})=${c.ss} dk</span>. `;
+        if(c.wq>0) t+=`Müşteri <b>${c.wq} dk</b> kuyrukta bekledi.<br>`;
+        else t+=`Vezne hazır, bekleme yok.<br>`;
+        v1End=c.se;
+      } else {
+        t+=`V2 daha erken boşalıyor → <b>V2'ye atandı</b>.<br>`;
+        t+=`<span class="code">SS=max(${c.at},${v2End})=${c.ss} dk</span>. `;
+        if(c.wq>0) t+=`Müşteri <b>${c.wq} dk</b> kuyrukta bekledi.<br>`;
+        else t+=`Vezne hazır, bekleme yok.<br>`;
+        v2End=c.se;
+      }
+      t+=`Servis Bitiş=<b>${c.se} dk</b>. Sistemde=<b>${c.tis} dk</b>.`;
+    }
+    html+=`<div class="sol-step">${t}</div>`;
+  }
+  const wqL=q.customers.map(c=>c.wq).join('+');
+  const tisL=q.customers.map(c=>c.tis).join('+');
+  const sdL=q.customers.map(c=>c.sd).join('+');
+  html+=`<div class="sol-summary"><b style="color:#34d399;font-size:0.9rem;">📊 Özet Hesaplamalar</b><br><br>
+    <b>Ort. Kuyruk:</b> (${wqL}) ÷ ${q.nC} = <b>${q.avgWq.toFixed(2)} dk</b><br>
+    <b>Ort. Sistemde:</b> (${tisL}) ÷ ${q.nC} = <b>${q.avgTis.toFixed(2)} dk</b><br>
+    <b>Maks. Bekleme:</b> <b>${q.maxWq} dk</b><br>
+    <b>Toplam Servis:</b> ${sdL} = <b>${q.totalSd} dk</b><br>
+    <b>Son Bitiş Zamanı:</b> max(V1=${q.v1End}, V2=${q.v2End}) = <b>${q.simEnd} dk</b><br>
+    <b>Toplam Boş:</b> 2×${q.simEnd} − ${q.totalSd} = <b>${q.totalIdle} dk</b><br>
+    <b>Kullanım:</b> ${q.totalSd} ÷ (2×${q.simEnd}) × 100 = <b>${q.util.toFixed(2)}%</b>
+  </div>`;
+  document.getElementById('qs2-solutionSteps').innerHTML=html;
+  card.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function qs2NewQuestion(){
+  QS2=qs2Generate();
+  document.getElementById('qs2-qTitle').textContent=`${QS2.sc.name} — Çift Kanallı Kuyruk Sistemi (G/G/2)`;
+  document.getElementById('qs2-qDesc').textContent=QS2.sc.desc(QS2.nC);
+  qs2RenderArrivalDist(QS2.aDist);
+  qs2RenderServiceDist(QS2.sDist);
+  qs2RenderRNG(QS2);
+  qs2RenderSimTable(QS2);
+  qs2RenderResults();
+  document.getElementById('qs2-solutionCard').style.display='none';
+  document.getElementById('qs2-solutionSteps').innerHTML='';
+  document.getElementById('qs2-scoreBanner').style.display='none';
+}
+qs2NewQuestion();
 
 // ── Global JS Tooltip (tablo içi overflow sorununu çözer) ──
 (function(){
