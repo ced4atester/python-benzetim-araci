@@ -3,242 +3,317 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Python Benzetim Sorusu Üretici</title>
+<title>Benzetim Modelleri Çalışma Portalı</title>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: 'Segoe UI', system-ui, sans-serif;
-    background: #f0f4f8;
-    color: #2d3748;
-    min-height: 100vh;
-    padding: 2rem 1rem;
-  }
-  .container { max-width: 860px; margin: 0 auto; }
+/* ── GENEL ── */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: #edf2f7;
+  color: #2d3748;
+  min-height: 100vh;
+}
 
-  .header {
-    text-align: center;
-    margin-bottom: 2rem;
-  }
-  .header h1 {
-    font-size: 1.55rem;
-    font-weight: 700;
-    color: #1a365d;
-    line-height: 1.4;
-  }
-  .header p {
-    font-size: 0.92rem;
-    color: #718096;
-    margin-top: 0.4rem;
-  }
+/* ── PORTAL BAŞLIK ── */
+.portal-header {
+  background: linear-gradient(135deg, #1a365d 0%, #2b6cb0 100%);
+  color: #fff;
+  text-align: center;
+  padding: 1.4rem 1rem 0;
+}
+.portal-header h1 { font-size: 1.3rem; font-weight: 700; }
+.portal-header p  { font-size: 0.82rem; opacity: 0.8; margin-top: 0.2rem; }
 
-  .card {
-    background: #ffffff;
-    border-radius: 14px;
-    border: 1px solid #e2e8f0;
-    padding: 1.4rem 1.6rem;
-    margin-bottom: 1.2rem;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
-  }
-  .card h2 {
-    font-size: 1rem;
-    font-weight: 600;
-    color: #2d3748;
-    margin-bottom: 1rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-  .card h2 .badge {
-    font-size: 0.75rem;
-    font-weight: 600;
-    padding: 2px 9px;
-    border-radius: 99px;
-    background: #ebf4ff;
-    color: #2b6cb0;
-  }
+/* ── SEKMELER ── */
+.tab-bar {
+  display: flex;
+  justify-content: center;
+  gap: 0.3rem;
+  margin-top: 1.1rem;
+}
+.tab-btn {
+  padding: 0.65rem 1.5rem;
+  border: none;
+  border-radius: 10px 10px 0 0;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.18s;
+  background: rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.75);
+}
+.tab-btn:hover { background: rgba(255,255,255,0.25); color: #fff; }
+.tab-btn.active { background: #edf2f7; color: #1a365d; }
 
-  .style-selector {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.8rem;
-  }
-  .style-btn {
-    padding: 0.85rem 1rem;
-    border: 2px solid #e2e8f0;
-    border-radius: 10px;
-    background: #f7fafc;
-    cursor: pointer;
-    font-size: 0.88rem;
-    font-weight: 500;
-    color: #4a5568;
-    text-align: center;
-    transition: all 0.18s;
-    line-height: 1.4;
-  }
-  .style-btn:hover { border-color: #90cdf4; background: #ebf8ff; }
-  .style-btn.active {
-    border-color: #3182ce;
-    background: #ebf8ff;
-    color: #2b6cb0;
-  }
-  .style-btn .icon { font-size: 1.4rem; display: block; margin-bottom: 0.3rem; }
+/* ── PANEL ── */
+.tab-panel { display: none; padding: 1.5rem 1rem 3rem; }
+.tab-panel.active { display: block; }
+.inner { max-width: 980px; margin: 0 auto; }
 
-  .btn-row {
-    display: flex;
-    gap: 0.7rem;
-    margin-top: 1rem;
-    flex-wrap: wrap;
-  }
-  button.primary {
-    padding: 0.6rem 1.3rem;
-    border: none;
-    border-radius: 8px;
-    background: #3182ce;
-    color: #fff;
-    font-size: 0.9rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.15s;
-  }
-  button.primary:hover { background: #2c5282; }
-  button.primary:disabled { background: #a0aec0; cursor: not-allowed; }
-  button.secondary {
-    padding: 0.6rem 1.3rem;
-    border: 1.5px solid #cbd5e0;
-    border-radius: 8px;
-    background: #fff;
-    color: #4a5568;
-    font-size: 0.9rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-  button.secondary:hover { border-color: #3182ce; color: #3182ce; }
-  button.secondary:disabled { opacity: 0.4; cursor: not-allowed; }
+/* ════════════════════════════════════════════
+   PANEL 1: PYTHON BENZETİM SORUSU ÜRETİCİ
+   ════════════════════════════════════════════ */
+#panel-python .py-header { text-align:center; margin-bottom:1.8rem; }
+#panel-python .py-header h2 { font-size:1.3rem; font-weight:700; color:#1a365d; line-height:1.4; }
+#panel-python .py-header p  { font-size:0.88rem; color:#718096; margin-top:0.3rem; }
 
-  .question-box {
-    background: #f0f7ff;
-    border-left: 4px solid #3182ce;
-    border-radius: 0 10px 10px 0;
-    padding: 1rem 1.2rem;
-    font-size: 0.95rem;
-    color: #2d3748;
-    line-height: 1.7;
-    white-space: pre-line;
-  }
-  .question-tag {
-    display: inline-block;
-    font-size: 0.73rem;
-    font-weight: 600;
-    padding: 2px 8px;
-    border-radius: 99px;
-    margin-bottom: 0.6rem;
-  }
-  .tag-olasilik { background: #c6f6d5; color: #276749; }
-  .tag-rastgele { background: #feebc8; color: #744210; }
+#panel-python .card {
+  background:#fff;
+  border-radius:14px;
+  border:1px solid #e2e8f0;
+  padding:1.4rem 1.6rem;
+  margin-bottom:1.2rem;
+  box-shadow:0 1px 4px rgba(0,0,0,0.05);
+}
+#panel-python .card h2 {
+  font-size:1rem; font-weight:600; color:#2d3748;
+  margin-bottom:1rem; display:flex; align-items:center; gap:0.5rem;
+}
+#panel-python .card h2 .badge {
+  font-size:0.75rem; font-weight:600; padding:2px 9px;
+  border-radius:99px; background:#ebf4ff; color:#2b6cb0;
+}
+#panel-python .style-selector { display:grid; grid-template-columns:1fr 1fr; gap:0.8rem; }
+#panel-python .style-btn {
+  padding:0.85rem 1rem; border:2px solid #e2e8f0; border-radius:10px;
+  background:#f7fafc; cursor:pointer; font-size:0.88rem; font-weight:500;
+  color:#4a5568; text-align:center; transition:all 0.18s; line-height:1.4;
+}
+#panel-python .style-btn:hover { border-color:#90cdf4; background:#ebf8ff; }
+#panel-python .style-btn.active { border-color:#3182ce; background:#ebf8ff; color:#2b6cb0; }
+#panel-python .style-btn .icon { font-size:1.4rem; display:block; margin-bottom:0.3rem; }
+#panel-python .btn-row { display:flex; gap:0.7rem; margin-top:1rem; flex-wrap:wrap; }
+#panel-python button.primary {
+  padding:0.6rem 1.3rem; border:none; border-radius:8px;
+  background:#3182ce; color:#fff; font-size:0.9rem; font-weight:600;
+  cursor:pointer; transition:background 0.15s;
+}
+#panel-python button.primary:hover { background:#2c5282; }
+#panel-python button.primary:disabled { background:#a0aec0; cursor:not-allowed; }
+#panel-python button.secondary {
+  padding:0.6rem 1.3rem; border:1.5px solid #cbd5e0; border-radius:8px;
+  background:#fff; color:#4a5568; font-size:0.9rem; font-weight:600;
+  cursor:pointer; transition:all 0.15s;
+}
+#panel-python button.secondary:hover { border-color:#3182ce; color:#3182ce; }
+#panel-python .question-box {
+  background:#f0f7ff; border-left:4px solid #3182ce;
+  border-radius:0 10px 10px 0; padding:1rem 1.2rem;
+  font-size:0.95rem; color:#2d3748; line-height:1.7; white-space:pre-line;
+}
+#panel-python .question-tag {
+  display:inline-block; font-size:0.73rem; font-weight:600;
+  padding:2px 8px; border-radius:99px; margin-bottom:0.6rem;
+}
+#panel-python .tag-olasilik { background:#c6f6d5; color:#276749; }
+#panel-python .tag-rastgele { background:#feebc8; color:#744210; }
+#panel-python textarea#codeArea {
+  width:100%; height:240px; font-family:'Courier New',Courier,monospace;
+  font-size:0.88rem; border:1.5px solid #e2e8f0; border-radius:8px;
+  padding:0.85rem 1rem; resize:vertical; background:#1e1e2e;
+  color:#cdd6f4; line-height:1.6; outline:none; transition:border-color 0.15s;
+}
+#panel-python textarea#codeArea:focus { border-color:#3182ce; }
+#panel-python textarea#codeArea::placeholder { color:#6c7086; }
+#panel-python .feedback-section { display:none; }
+#panel-python .feedback-block {
+  border-radius:10px; padding:1rem 1.2rem; margin-bottom:0.8rem;
+  font-size:0.88rem; line-height:1.65;
+}
+#panel-python .fb-correct { background:#f0fff4; border:1px solid #9ae6b4; }
+#panel-python .fb-correct h3 { color:#276749; font-size:0.9rem; margin-bottom:0.5rem; }
+#panel-python .fb-wrong   { background:#fff5f5; border:1px solid #feb2b2; }
+#panel-python .fb-wrong h3 { color:#9b2c2c; font-size:0.9rem; margin-bottom:0.5rem; }
+#panel-python .fb-tip     { background:#fffaf0; border:1px solid #fbd38d; }
+#panel-python .fb-tip h3  { color:#744210; font-size:0.9rem; margin-bottom:0.5rem; }
+#panel-python .fb-solution { background:#f0f4ff; border:1px solid #a3bffa; }
+#panel-python .fb-solution h3 { color:#2d3748; font-size:0.9rem; margin-bottom:0.5rem; }
+#panel-python .fb-solution pre {
+  font-family:'Courier New',monospace; font-size:0.82rem;
+  background:#1e1e2e; color:#cdd6f4; padding:0.8rem 1rem;
+  border-radius:7px; overflow-x:auto; margin-top:0.5rem;
+  line-height:1.6; white-space:pre;
+}
+#panel-python ul.check-list { padding-left:1.2rem; }
+#panel-python ul.check-list li { margin-bottom:0.3rem; }
+#panel-python .check-ok::before { content:"✓ "; color:#38a169; font-weight:700; }
+#panel-python .check-err::before { content:"✗ "; color:#e53e3e; font-weight:700; }
+#panel-python .score-bar { display:flex; align-items:center; gap:1rem; margin-bottom:1rem; }
+#panel-python .score-label { font-size:0.9rem; font-weight:600; color:#2d3748; }
+#panel-python .bar-wrap { flex:1; height:10px; background:#e2e8f0; border-radius:99px; overflow:hidden; }
+#panel-python .bar-fill  { height:100%; border-radius:99px; transition:width 0.5s; }
+#panel-python .bar-green { background:#48bb78; }
+#panel-python .bar-yellow{ background:#ecc94b; }
+#panel-python .bar-red   { background:#fc8181; }
+#panel-python .score-num { font-size:0.9rem; font-weight:700; min-width:2.5rem; text-align:right; }
+#panel-python .hint-btn {
+  font-size:0.82rem; font-weight:600; padding:5px 13px;
+  border:1.5px solid #d69e2e; border-radius:8px;
+  background:#fffaf0; color:#744210; cursor:pointer;
+  transition:all 0.15s; white-space:nowrap;
+}
+#panel-python .hint-btn:hover  { background:#feebc8; border-color:#b7791f; }
+#panel-python .hint-btn.active { background:#feebc8; border-color:#b7791f; }
+@media(max-width:540px){ #panel-python .style-selector { grid-template-columns:1fr; } }
 
-  textarea#codeArea {
-    width: 100%;
-    height: 240px;
-    font-family: 'Courier New', Courier, monospace;
-    font-size: 0.88rem;
-    border: 1.5px solid #e2e8f0;
-    border-radius: 8px;
-    padding: 0.85rem 1rem;
-    resize: vertical;
-    background: #1e1e2e;
-    color: #cdd6f4;
-    line-height: 1.6;
-    outline: none;
-    transition: border-color 0.15s;
-  }
-  textarea#codeArea:focus { border-color: #3182ce; }
-  textarea#codeArea::placeholder { color: #6c7086; }
+/* ════════════════════════════════════════════
+   PANEL 2: KUYRUK SİSTEMİ SİMÜLASYONU
+   ════════════════════════════════════════════ */
+#panel-kuyruk { background:#f0f4f8; }
+#panel-kuyruk .qs-header { text-align:center; margin-bottom:1.5rem; }
+#panel-kuyruk .qs-header h2 { font-size:1.3rem; font-weight:700; color:#1a365d; }
+#panel-kuyruk .qs-header p  { color:#718096; font-size:0.85rem; margin-top:0.3rem; }
 
-  .feedback-section { display: none; }
-  .feedback-block {
-    border-radius: 10px;
-    padding: 1rem 1.2rem;
-    margin-bottom: 0.8rem;
-    font-size: 0.88rem;
-    line-height: 1.65;
-  }
-  .fb-correct { background: #f0fff4; border: 1px solid #9ae6b4; }
-  .fb-correct h3 { color: #276749; font-size: 0.9rem; margin-bottom: 0.5rem; }
-  .fb-wrong { background: #fff5f5; border: 1px solid #feb2b2; }
-  .fb-wrong h3 { color: #9b2c2c; font-size: 0.9rem; margin-bottom: 0.5rem; }
-  .fb-tip { background: #fffaf0; border: 1px solid #fbd38d; }
-  .fb-tip h3 { color: #744210; font-size: 0.9rem; margin-bottom: 0.5rem; }
-  .fb-solution { background: #f0f4ff; border: 1px solid #a3bffa; }
-  .fb-solution h3 { color: #2d3748; font-size: 0.9rem; margin-bottom: 0.5rem; }
-  .fb-solution pre {
-    font-family: 'Courier New', monospace;
-    font-size: 0.82rem;
-    background: #1e1e2e;
-    color: #cdd6f4;
-    padding: 0.8rem 1rem;
-    border-radius: 7px;
-    overflow-x: auto;
-    margin-top: 0.5rem;
-    line-height: 1.6;
-    white-space: pre;
-  }
-  ul.check-list { padding-left: 1.2rem; }
-  ul.check-list li { margin-bottom: 0.3rem; }
-  .check-ok::before { content: "✓ "; color: #38a169; font-weight: 700; }
-  .check-err::before { content: "✗ "; color: #e53e3e; font-weight: 700; }
+#panel-kuyruk .card {
+  background:#fff; border-radius:12px; border:1px solid #e2e8f0;
+  padding:1.3rem 1.5rem; margin-bottom:1.1rem;
+  box-shadow:0 1px 4px rgba(0,0,0,0.05);
+}
+#panel-kuyruk .card-title {
+  font-size:0.95rem; font-weight:700; color:#1a365d;
+  margin-bottom:0.9rem; padding-bottom:0.6rem;
+  border-bottom:2px solid #ebf4ff;
+}
+#panel-kuyruk .scenario-desc {
+  font-size:0.88rem; color:#4a5568; line-height:1.75;
+  margin-bottom:1rem; padding:0.75rem 1rem;
+  background:#f7fafc; border-radius:8px; border-left:3px solid #3182ce;
+}
+#panel-kuyruk .dist-grid { display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; margin-bottom:1.2rem; }
+@media(max-width:620px){ #panel-kuyruk .dist-grid { grid-template-columns:1fr; } }
+#panel-kuyruk .dist-label { font-size:0.83rem; font-weight:700; color:#2d3748; margin-bottom:0.45rem; }
 
-  .score-bar {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    margin-bottom: 1rem;
-  }
-  .score-label { font-size: 0.9rem; font-weight: 600; color: #2d3748; }
-  .bar-wrap { flex: 1; height: 10px; background: #e2e8f0; border-radius: 99px; overflow: hidden; }
-  .bar-fill { height: 100%; border-radius: 99px; transition: width 0.5s; }
-  .bar-green { background: #48bb78; }
-  .bar-yellow { background: #ecc94b; }
-  .bar-red { background: #fc8181; }
-  .score-num { font-size: 0.9rem; font-weight: 700; min-width: 2.5rem; text-align: right; }
+#panel-kuyruk table { width:100%; border-collapse:collapse; font-size:0.84rem; }
+#panel-kuyruk th {
+  background:#2b6cb0; color:#fff; padding:7px 10px;
+  text-align:center; font-weight:600; border:1px solid #2c5282; font-size:0.8rem;
+}
+#panel-kuyruk td { padding:6px 10px; text-align:center; border:1px solid #e2e8f0; color:#2d3748; }
+#panel-kuyruk tr:nth-child(even) td { background:#f7fafc; }
+#panel-kuyruk tr:nth-child(odd)  td { background:#fff; }
+#panel-kuyruk .rng-table-wrap { margin-bottom:1.1rem; }
+#panel-kuyruk .rng-table-wrap table th { background:#744210; border-color:#92400e; }
 
-  .hint-btn {
-    font-size: 0.82rem;
-    font-weight: 600;
-    padding: 5px 13px;
-    border: 1.5px solid #d69e2e;
-    border-radius: 8px;
-    background: #fffaf0;
-    color: #744210;
-    cursor: pointer;
-    transition: all 0.15s;
-    white-space: nowrap;
-  }
-  .hint-btn:hover { background: #feebc8; border-color: #b7791f; }
-  .hint-btn.active { background: #feebc8; border-color: #b7791f; }
+#panel-kuyruk .sim-wrap { overflow-x:auto; margin-bottom:0.5rem; }
+#panel-kuyruk .sim-table { min-width:850px; }
+#panel-kuyruk .sim-table th {
+  background:#1a365d; border-color:#2a4a7f; font-size:0.76rem;
+  padding:8px 6px; white-space:nowrap;
+}
+#panel-kuyruk .sim-table td { padding:3px; border-color:#cbd5e0; }
+#panel-kuyruk .sim-table input {
+  width:100%; min-width:58px; border:1.5px solid #cbd5e0;
+  border-radius:5px; padding:5px 4px; font-size:0.82rem;
+  text-align:center; background:#fff; color:#2d3748;
+  outline:none; transition:border-color 0.15s;
+}
+#panel-kuyruk .sim-table input:focus   { border-color:#3182ce; background:#ebf8ff; }
+#panel-kuyruk .sim-table input.correct { background:#f0fff4; border-color:#48bb78; color:#276749; font-weight:700; }
+#panel-kuyruk .sim-table input.wrong   { background:#fff5f5; border-color:#fc8181; color:#9b2c2c; }
+#panel-kuyruk .sim-table input:disabled{ background:#edf2f7; color:#4a5568; font-weight:600; cursor:default; border-color:#e2e8f0; }
+#panel-kuyruk .correct-hint { display:block; font-size:0.68rem; color:#c53030; font-weight:700; margin-top:1px; text-align:center; }
 
-  .placeholder-msg {
-    text-align: center;
-    color: #a0aec0;
-    font-size: 0.9rem;
-    padding: 2rem 0;
-  }
+#panel-kuyruk .results-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; }
+@media(max-width:540px){ #panel-kuyruk .results-grid { grid-template-columns:1fr; } }
+#panel-kuyruk .res-item label { display:block; font-size:0.8rem; font-weight:600; color:#4a5568; margin-bottom:4px; }
+#panel-kuyruk .res-item input {
+  width:100%; border:1.5px solid #cbd5e0; border-radius:7px;
+  padding:7px 10px; font-size:0.9rem; text-align:center;
+  outline:none; transition:border-color 0.15s; color:#2d3748;
+}
+#panel-kuyruk .res-item input:focus   { border-color:#3182ce; }
+#panel-kuyruk .res-item input.correct { background:#f0fff4; border-color:#48bb78; color:#276749; font-weight:700; }
+#panel-kuyruk .res-item input.wrong   { background:#fff5f5; border-color:#fc8181; color:#9b2c2c; }
 
-  @media (max-width: 540px) {
-    .style-selector { grid-template-columns: 1fr; }
-    .header h1 { font-size: 1.2rem; }
-  }
+#panel-kuyruk .btn-row { display:flex; gap:0.65rem; flex-wrap:wrap; margin-top:1rem; }
+#panel-kuyruk .btn { padding:0.58rem 1.2rem; border:none; border-radius:8px; font-size:0.88rem; font-weight:700; cursor:pointer; transition:all 0.15s; }
+#panel-kuyruk .btn-blue  { background:#3182ce; color:#fff; }
+#panel-kuyruk .btn-blue:hover  { background:#2c5282; }
+#panel-kuyruk .btn-green { background:#38a169; color:#fff; }
+#panel-kuyruk .btn-green:hover { background:#276749; }
+#panel-kuyruk .btn-gray  { background:#fff; color:#4a5568; border:1.5px solid #cbd5e0; }
+#panel-kuyruk .btn-gray:hover  { border-color:#3182ce; color:#3182ce; }
+
+#panel-kuyruk .score-banner {
+  border-radius:9px; padding:0.8rem 1.1rem;
+  margin-top:1rem; font-size:0.9rem; font-weight:700; text-align:center;
+}
+#panel-kuyruk .score-good { background:#f0fff4; color:#276749; border:1px solid #9ae6b4; }
+#panel-kuyruk .score-mid  { background:#fffaf0; color:#744210; border:1px solid #fbd38d; }
+#panel-kuyruk .score-bad  { background:#fff5f5; color:#9b2c2c; border:1px solid #feb2b2; }
+
+#panel-kuyruk #qs-solutionCard { display:none; }
+#panel-kuyruk .sol-step {
+  background:#f7fafc; border-left:3px solid #3182ce;
+  border-radius:0 8px 8px 0; padding:0.75rem 1rem;
+  margin-bottom:0.65rem; font-size:0.86rem; line-height:1.75;
+}
+#panel-kuyruk .sol-step b { color:#1a365d; }
+#panel-kuyruk .code { font-family:'Courier New',monospace; background:#edf2f7; padding:1px 6px; border-radius:4px; font-size:0.82rem; }
+#panel-kuyruk .sol-summary {
+  background:#f0fff4; border-left:3px solid #38a169;
+  border-radius:0 8px 8px 0; padding:0.75rem 1rem;
+  margin-bottom:0.65rem; font-size:0.86rem; line-height:1.9;
+}
+#panel-kuyruk .formula-box {
+  background:#ebf4ff; border:1px solid #bee3f8;
+  border-radius:10px; padding:1rem 1.2rem; margin-top:0.8rem;
+  font-size:0.85rem; line-height:2.1;
+}
+#panel-kuyruk .formula-box h3 { font-size:0.9rem; font-weight:700; color:#2b6cb0; margin-bottom:0.4rem; }
+
+/* Tooltip (kuyruk panelinde) */
+#panel-kuyruk .tip-wrap { display:inline-flex; align-items:center; gap:4px; }
+#panel-kuyruk .tip {
+  display:inline-block; width:15px; height:15px; background:#bee3f8;
+  color:#2b6cb0; border-radius:50%; font-size:0.7rem; font-weight:700;
+  text-align:center; line-height:15px; cursor:help; position:relative;
+  flex-shrink:0; user-select:none;
+}
+#panel-kuyruk .tip::after {
+  content:attr(data-tip); position:absolute;
+  bottom:calc(100% + 7px); left:50%; transform:translateX(-50%);
+  background:#1a365d; color:#fff; font-size:0.78rem; font-weight:400;
+  line-height:1.55; padding:8px 11px; border-radius:8px; width:230px;
+  white-space:normal; pointer-events:none; opacity:0;
+  transition:opacity 0.15s; z-index:999;
+  box-shadow:0 4px 12px rgba(0,0,0,0.25);
+}
+#panel-kuyruk .tip::before {
+  content:''; position:absolute; bottom:calc(100% + 2px);
+  left:50%; transform:translateX(-50%);
+  border:5px solid transparent; border-top-color:#1a365d;
+  opacity:0; transition:opacity 0.15s; pointer-events:none; z-index:999;
+}
+#panel-kuyruk .tip:hover::after,
+#panel-kuyruk .tip:hover::before { opacity:1; }
 </style>
 </head>
 <body>
-<div class="container">
 
-  <div class="header">
-    <h1>Python Benzetim Sorusu Üretici ve Kod Kontrol Aracı</h1>
-    <p>Üniversite Benzetim Modelleri Dersi &nbsp;|&nbsp; Soru üret, kod yaz, anında geri bildirim al</p>
+<!-- PORTAL BAŞLIK + SEKMELER -->
+<div class="portal-header">
+  <h1>📚 Benzetim Modelleri Çalışma Portalı</h1>
+  <p>Üniversite Benzetim Modelleri Dersi — İki araç tek sayfada</p>
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('python', this)">
+      🐍 Python Simülasyon Soruları
+    </button>
+    <button class="tab-btn" onclick="switchTab('kuyruk', this)">
+      🏦 Kuyruk Sistemi Simülasyonu
+    </button>
+  </div>
+</div>
+
+<!-- ══════════ PANEL 1: PYTHON ══════════ -->
+<div class="tab-panel active" id="panel-python">
+<div class="inner" style="max-width:860px;">
+
+  <div class="py-header" style="margin-top:0.5rem;">
+    <h2>Python Benzetim Sorusu Üretici ve Kod Kontrol Aracı</h2>
+    <p>Soru üret → Python kodunu yaz → Çalıştır → Kontrol et → Geri bildirim al</p>
   </div>
 
-  <!-- ADIM 1: Stil Seçimi -->
   <div class="card">
     <h2><span class="badge">1</span> Soru stilini seç</h2>
     <div class="style-selector">
@@ -258,27 +333,23 @@
     </div>
   </div>
 
-  <!-- ADIM 2: Soru -->
   <div class="card" id="questionCard" style="display:none">
     <h2><span class="badge">2</span> Soru <span id="questionTag" class="question-tag"></span></h2>
     <div class="question-box" id="questionText"></div>
     <div class="btn-row" style="margin-top:1rem">
-      <button class="secondary" onclick="generateQuestion()">&#8635; Tekrar Soru Üret</button>
+      <button class="secondary" onclick="generateQuestion()">↺ Tekrar Soru Üret</button>
     </div>
   </div>
 
-  <!-- ADIM 3: Kod Yazma -->
   <div class="card" id="codeCard" style="display:none">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;gap:0.5rem;flex-wrap:wrap;">
       <h2 style="margin-bottom:0"><span class="badge">3</span> Python kodunu yaz</h2>
-      <button class="hint-btn" id="hintBtn" onclick="toggleHint()" title="Çözümü göster / gizle">
-        💡 İpucu
-      </button>
+      <button class="hint-btn" id="hintBtn" onclick="toggleHint()">💡 İpucu</button>
     </div>
-    <div id="hintBox" style="display:none;margin-bottom:0.9rem;background:#1e1e2e;border:1.5px solid #4a5568;border-radius:9px;padding:0.85rem 1rem;position:relative;">
+    <div id="hintBox" style="display:none;margin-bottom:0.9rem;background:#1e1e2e;border:1.5px solid #4a5568;border-radius:9px;padding:0.85rem 1rem;">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem;">
-        <span style="font-size:0.75rem;font-weight:600;color:#a0aec0;letter-spacing:0.04em;">ÖRNEK ÇÖZÜM</span>
-        <button onclick="copyHint()" style="font-size:0.75rem;padding:2px 10px;border:1px solid #4a5568;border-radius:6px;background:#2d3748;color:#a0aec0;cursor:pointer;" id="copyBtn">Kopyala</button>
+        <span style="font-size:0.75rem;font-weight:600;color:#a0aec0;">ÖRNEK ÇÖZÜM</span>
+        <button onclick="copyHint()" id="copyBtn" style="font-size:0.75rem;padding:2px 10px;border:1px solid #4a5568;border-radius:6px;background:#2d3748;color:#a0aec0;cursor:pointer;">Kopyala</button>
       </div>
       <pre id="hintCode" style="font-family:'Courier New',monospace;font-size:0.83rem;color:#cdd6f4;margin:0;white-space:pre;overflow-x:auto;line-height:1.65;"></pre>
     </div>
@@ -290,20 +361,19 @@ import random
 # while ...:
 #     ..."></textarea>
     <div class="btn-row">
-      <button class="primary" onclick="runCode()" id="runBtn">&#9654; Kodu Çalıştır</button>
-      <button class="primary" onclick="checkCode()">&#10003; Kodu Kontrol Et</button>
+      <button class="primary" onclick="runCode()" id="runBtn">▶ Kodu Çalıştır</button>
+      <button class="primary" onclick="checkCode()">✓ Kodu Kontrol Et</button>
       <button class="secondary" onclick="clearCode()">Temizle</button>
     </div>
     <div id="outputBox" style="display:none;margin-top:0.9rem;">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.4rem;">
-        <span style="font-size:0.78rem;font-weight:600;color:#a0aec0;letter-spacing:0.04em;">ÇIKTI</span>
+        <span style="font-size:0.78rem;font-weight:600;color:#a0aec0;">ÇIKTI</span>
         <span id="outputStatus" style="font-size:0.75rem;"></span>
       </div>
       <pre id="outputText" style="font-family:'Courier New',monospace;font-size:0.85rem;background:#0d1117;color:#e6edf3;padding:0.85rem 1rem;border-radius:8px;margin:0;min-height:48px;white-space:pre-wrap;word-break:break-word;line-height:1.6;border:1.5px solid #30363d;"></pre>
     </div>
   </div>
 
-  <!-- ADIM 4: Geri Bildirim -->
   <div class="card feedback-section" id="feedbackCard">
     <h2><span class="badge">4</span> Geri bildirim</h2>
     <div class="score-bar">
@@ -330,730 +400,452 @@ import random
   </div>
 
 </div>
+</div><!-- /panel-python -->
 
+<!-- ══════════ PANEL 2: KUYRUK ══════════ -->
+<div class="tab-panel" id="panel-kuyruk">
+<div class="inner">
+
+  <div class="qs-header" style="margin-top:0.5rem;">
+    <h2>Tek Kanallı Kuyruk Sistemi Simülasyonu</h2>
+    <p>Soruyu oku → tabloyu doldur → kontrol et → çözümü incele</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title" id="qs-qTitle">—</div>
+    <div class="scenario-desc" id="qs-qDesc"></div>
+    <div class="dist-grid">
+      <div>
+        <div class="dist-label">1. Varışlar Arası Süre (dakika)</div>
+        <table id="qs-tblArrival"></table>
+      </div>
+      <div>
+        <div class="dist-label">2. Servis Süresi (dakika)</div>
+        <table id="qs-tblService"></table>
+      </div>
+    </div>
+    <div class="rng-table-wrap">
+      <div class="dist-label" style="margin-bottom:0.45rem;">Aşağıda müşteriler için rastgele oluşturulmuş rassal sayılar verilmiştir.</div>
+      <table id="qs-tblRNG" style="max-width:420px;"></table>
+    </div>
+    <div class="btn-row" style="margin-top:0.3rem;">
+      <button class="btn btn-gray" onclick="qsNewQuestion()">🔄 Yeni Soru Üret</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Varışlararası süreyi ve servis süresini belirleyerek aşağıdaki tabloyu doldurunuz.</div>
+    <p style="font-size:0.8rem;color:#718096;margin-bottom:0.7rem;">Gri hücreler sabittir. Boş hücrelere cevabınızı yazınız.</p>
+    <div class="sim-wrap">
+      <table class="sim-table" id="qs-tblSim"></table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Ayrıca aşağıdaki değerleri hesaplayınız:</div>
+    <div class="results-grid" id="qs-resultsGrid"></div>
+    <div class="btn-row">
+      <button class="btn btn-blue"  onclick="qsCheckAnswers()">✓ Cevapları Kontrol Et</button>
+      <button class="btn btn-green" onclick="qsShowSolution()">📖 Detaylı Çözümü Göster</button>
+    </div>
+    <div id="qs-scoreBanner" style="display:none;"></div>
+  </div>
+
+  <div class="card" id="qs-solutionCard">
+    <div class="card-title">📋 Adım Adım Detaylı Çözüm</div>
+    <div id="qs-solutionSteps"></div>
+    <div class="formula-box">
+      <h3>📐 Genel Formüller</h3>
+      <div>Varış Zamanı<sub>i</sub> = Varış Zamanı<sub>i-1</sub> + Varışlar Arası Süre<sub>i</sub> &nbsp;<span class="code">(1. müşteri → 0)</span></div>
+      <div>Servis Başlangıç = <span class="code">max(Varış Zamanı, Önceki Servis Bitişi)</span></div>
+      <div>Servis Bitiş = <span class="code">Servis Başlangıç + Servis Süresi</span></div>
+      <div>Kuyrukta Bekleme = <span class="code">Servis Başlangıç − Varış Zamanı</span></div>
+      <div>Sistemde Kalma = <span class="code">Servis Bitiş − Varış Zamanı</span></div>
+      <div>Vezne Boş Kalma = <span class="code">Varış Zamanı<sub>i</sub> − Servis Bitiş<sub>i-1</sub></span> (yalnızca &gt; 0 ise)</div>
+      <div>Kullanım Oranı = <span class="code">Toplam Servis Süresi ÷ Son Servis Bitiş Zamanı × 100</span></div>
+    </div>
+  </div>
+
+</div>
+</div><!-- /panel-kuyruk -->
+
+<!-- ══════════ JAVASCRIPT ══════════ -->
 <script>
-// ─── VERİ ───────────────────────────────────────────────────────────────────
+// ── SEKME GEÇİŞİ ──────────────────────────────────────────────────────────
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+// PYTHON PANELI JS
+// ══════════════════════════════════════════════════════════════════════════
+function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
 const OLASILIK_SORULARI = [
-  {
-    konu: "Burs Kazanma",
-    metin: (p, azalma, maxYil) =>
-`Bir öğrencinin burs başvurusunun ilk yıl kabul edilme olasılığı ${(p*100).toFixed(0)}%'dir.
-Her başarısız başvurudan sonra olasılık ${(azalma*100).toFixed(0)} puan azalmaktadır.
-Program, burs kazanılana kadar veya olasılık sıfıra düşene kadar devam etmelidir.
-
-Görevi:
-• Bir döngü kurarak her yılda random.random() ile 0-1 arasında rastgele sayı üretin.
-• Üretilen sayı mevcut olasılıktan küçük veya eşitse burs kazanıldı sayılır.
-• Burs kazanılırsa kaçıncı yılda kazanıldığını ekrana yazdırın.
-• Olasılık ${(p*100).toFixed(0) - Math.floor(p/azalma)*azalma*100 <= 0 ? 0 : (azalma*100).toFixed(0)} puan azaltılmaya devam ederse ve sıfıra düşerse "Burs kazanılamadı" mesajı verilmelidir.`,
-    p: () => pick([0.30, 0.40, 0.25, 0.35]),
-    azalma: () => pick([0.05, 0.08, 0.10]),
-    extra: {}
-  },
-  {
-    konu: "Sınav Geçme",
-    metin: (p, azalma) =>
-`Bir öğrencinin sınavı ilk denemede geçme olasılığı ${(p*100).toFixed(0)}%'dir.
-Her başarısız denemeden sonra olasılık ${(azalma*100).toFixed(0)} puan düşmektedir.
-(Yorgunluk ve motivasyon kaybı nedeniyle)
-
-Görevi:
-• Her sınav denemesinde random.random() ile 0-1 arası sayı üretin.
-• Sayı mevcut geçme olasılığından küçük veya eşitse sınav geçildi.
-• Kaçıncı denemede geçildiğini ekrana yazdırın.
-• Olasılık 0'a düşerse "Sınav geçilemedi" mesajı verin.`,
-    p: () => pick([0.45, 0.50, 0.60, 0.35]),
-    azalma: () => pick([0.05, 0.10, 0.08]),
-    extra: {}
-  },
-  {
-    konu: "İş Başvurusu Kabulü",
-    metin: (p, azalma) =>
-`Bir adayın iş başvurusunun kabul edilme başlangıç olasılığı ${(p*100).toFixed(0)}%'dir.
-Her reddedilmeden sonra özgüven ve tecrübe eksikliğiyle birlikte olasılık ${(azalma*100).toFixed(0)} puan azalmaktadır.
-
-Görevi:
-• Her başvuruda random.random() ile rastgele sayı üretin.
-• Sayı mevcut kabul olasılığından küçük veya eşitse iş teklifi alındı.
-• Kaçıncı başvuruda teklif alındığını yazdırın.
-• Olasılık sıfıra düşerse "Kabul edilemedi" yazdırın.`,
-    p: () => pick([0.20, 0.30, 0.25]),
-    azalma: () => pick([0.03, 0.05, 0.04]),
-    extra: {}
-  },
-  {
-    konu: "Ürün Satılması",
-    metin: (p, azalma) =>
-`Bir satıcının her müşteriyle görüşmede ürün satma olasılığı ${(p*100).toFixed(0)}%'dir.
-Her başarısız görüşmede motivasyon düşüşüyle olasılık ${(azalma*100).toFixed(0)} puan azalmaktadır.
-
-Görevi:
-• Her görüşmede random.random() ile 0-1 arası rastgele sayı üretin.
-• Sayı ≤ mevcut olasılık ise ürün satıldı.
-• Kaçıncı görüşmede satış yapıldığını ekrana yazdırın.
-• Olasılık 0'a düşerse "Satış yapılamadı" mesajı verin.`,
-    p: () => pick([0.35, 0.40, 0.30]),
-    azalma: () => pick([0.05, 0.07, 0.06]),
-    extra: {}
-  },
-  {
-    konu: "Hastanın İyileşmesi",
-    metin: (p, azalma) =>
-`Bir hastanın belirli bir tedaviyle her haftada iyileşme olasılığı ${(p*100).toFixed(0)}%'dir.
-Tedavi işe yaramazsa her geçen haftada olasılık ${(azalma*100).toFixed(0)} puan düşmektedir.
-
-Görevi:
-• Her haftada random.random() ile rastgele sayı üretin.
-• Sayı ≤ mevcut iyileşme olasılığı ise hasta iyileşti.
-• Kaçıncı haftada iyileştiğini ekrana yazdırın.
-• Olasılık 0'a düşerse "Hasta iyileşemedi" mesajı verin.`,
-    p: () => pick([0.40, 0.50, 0.35]),
-    azalma: () => pick([0.05, 0.08, 0.10]),
-    extra: {}
-  },
-  {
-    konu: "Takımın Şampiyon Olması",
-    metin: (p, azalma) =>
-`Bir futbol takımının her sezon şampiyonluk kazanma olasılığı ${(p*100).toFixed(0)}%'dir.
-Her başarısız sezonda oyuncu performansı düşüşüyle olasılık ${(azalma*100).toFixed(0)} puan azalmaktadır.
-
-Görevi:
-• Her sezonda random.random() ile rastgele sayı üretin.
-• Sayı ≤ mevcut olasılık ise şampiyonluk kazanıldı.
-• Kaçıncı sezonda şampiyonluk kazanıldığını yazdırın.
-• Olasılık 0'a düşerse "Şampiyonluk kazanılamadı" yazdırın.`,
-    p: () => pick([0.20, 0.25, 0.30]),
-    azalma: () => pick([0.03, 0.05, 0.04]),
-    extra: {}
-  },
-  {
-    konu: "Müşterinin Kampanyaya Katılması",
-    metin: (p, azalma) =>
-`Bir e-ticaret şirketinin her müşteriye gönderdiği kampanya e-postasında müşterinin katılım gösterme olasılığı ${(p*100).toFixed(0)}%'dir.
-Her başarısız gönderimde ilgi azalmasıyla olasılık ${(azalma*100).toFixed(0)} puan düşmektedir.
-
-Görevi:
-• Her e-posta gönderiminde random.random() ile rastgele sayı üretin.
-• Sayı ≤ mevcut olasılık ise müşteri kampanyaya katıldı.
-• Kaçıncı gönderimde katılım sağlandığını yazdırın.
-• Olasılık 0'a düşerse "Katılım sağlanamadı" mesajı verin.`,
-    p: () => pick([0.15, 0.20, 0.25]),
-    azalma: () => pick([0.02, 0.03, 0.04]),
-    extra: {}
-  },
-  {
-    konu: "Oyunda Nadir Eşya Kazanılması",
-    metin: (p, azalma) =>
-`Bir oyuncunun her sandık açışında nadir eşya kazanma olasılığı ${(p*100).toFixed(0)}%'dir.
-Arka arkaya başarısız her açılışta şans düşüşüyle olasılık ${(azalma*100).toFixed(0)} puan azalmaktadır.
-
-Görevi:
-• Her sandık açılışında random.random() ile rastgele sayı üretin.
-• Sayı ≤ mevcut olasılık ise nadir eşya kazanıldı.
-• Kaçıncı açılışta eşya kazanıldığını ekrana yazdırın.
-• Olasılık 0'a düşerse "Nadir eşya kazanılamadı" mesajı verin.`,
-    p: () => pick([0.10, 0.15, 0.20]),
-    azalma: () => pick([0.02, 0.03, 0.01]),
-    extra: {}
-  }
+  { konu:"Burs Kazanma", metin:(p,az)=>`Bir öğrencinin burs başvurusunun ilk yıl kabul edilme olasılığı ${(p*100).toFixed(0)}%'dir.\nHer başarısız başvurudan sonra olasılık ${(az*100).toFixed(0)} puan azalmaktadır.\nProgram, burs kazanılana kadar veya olasılık sıfıra düşene kadar devam etmelidir.\n\nGörevi:\n• Her yılda random.random() ile 0-1 arasında rastgele sayı üretin.\n• Sayı ≤ mevcut olasılık ise burs kazanıldı.\n• Kaçıncı yılda kazanıldığını ekrana yazdırın.\n• Olasılık 0'a düşerse "Burs kazanılamadı" mesajı verin.`, p:()=>pick([0.30,0.40,0.25,0.35]), azalma:()=>pick([0.05,0.08,0.10]) },
+  { konu:"Sınav Geçme", metin:(p,az)=>`Bir öğrencinin sınavı ilk denemede geçme olasılığı ${(p*100).toFixed(0)}%'dir.\nHer başarısız denemeden sonra olasılık ${(az*100).toFixed(0)} puan düşmektedir.\n\nGörevi:\n• Her sınav denemesinde random.random() ile 0-1 arası sayı üretin.\n• Sayı ≤ mevcut olasılık ise sınav geçildi.\n• Kaçıncı denemede geçildiğini ekrana yazdırın.\n• Olasılık 0'a düşerse "Sınav geçilemedi" mesajı verin.`, p:()=>pick([0.45,0.50,0.60,0.35]), azalma:()=>pick([0.05,0.10,0.08]) },
+  { konu:"İş Başvurusu Kabulü", metin:(p,az)=>`Bir adayın iş başvurusunun kabul edilme başlangıç olasılığı ${(p*100).toFixed(0)}%'dir.\nHer reddedilmeden sonra olasılık ${(az*100).toFixed(0)} puan azalmaktadır.\n\nGörevi:\n• Her başvuruda random.random() ile rastgele sayı üretin.\n• Sayı ≤ mevcut olasılık ise iş teklifi alındı.\n• Kaçıncı başvuruda teklif alındığını yazdırın.\n• Olasılık sıfıra düşerse "Kabul edilemedi" yazdırın.`, p:()=>pick([0.20,0.30,0.25]), azalma:()=>pick([0.03,0.05,0.04]) },
+  { konu:"Ürün Satılması", metin:(p,az)=>`Bir satıcının her görüşmede ürün satma olasılığı ${(p*100).toFixed(0)}%'dir.\nHer başarısız görüşmede olasılık ${(az*100).toFixed(0)} puan azalmaktadır.\n\nGörevi:\n• Her görüşmede random.random() ile rastgele sayı üretin.\n• Sayı ≤ mevcut olasılık ise ürün satıldı.\n• Kaçıncı görüşmede satış yapıldığını yazdırın.\n• Olasılık 0'a düşerse "Satış yapılamadı" mesajı verin.`, p:()=>pick([0.35,0.40,0.30]), azalma:()=>pick([0.05,0.07,0.06]) },
+  { konu:"Hastanın İyileşmesi", metin:(p,az)=>`Bir hastanın her haftada iyileşme olasılığı ${(p*100).toFixed(0)}%'dir.\nHer geçen haftada olasılık ${(az*100).toFixed(0)} puan düşmektedir.\n\nGörevi:\n• Her haftada random.random() ile rastgele sayı üretin.\n• Sayı ≤ mevcut olasılık ise hasta iyileşti.\n• Kaçıncı haftada iyileştiğini yazdırın.\n• Olasılık 0'a düşerse "Hasta iyileşemedi" mesajı verin.`, p:()=>pick([0.40,0.50,0.35]), azalma:()=>pick([0.05,0.08,0.10]) },
+  { konu:"Takımın Şampiyon Olması", metin:(p,az)=>`Bir futbol takımının her sezon şampiyonluk kazanma olasılığı ${(p*100).toFixed(0)}%'dir.\nHer başarısız sezonda olasılık ${(az*100).toFixed(0)} puan azalmaktadır.\n\nGörevi:\n• Her sezonda random.random() ile rastgele sayı üretin.\n• Sayı ≤ mevcut olasılık ise şampiyonluk kazanıldı.\n• Kaçıncı sezonda kazanıldığını yazdırın.\n• Olasılık 0'a düşerse "Şampiyonluk kazanılamadı" yazdırın.`, p:()=>pick([0.20,0.25,0.30]), azalma:()=>pick([0.03,0.05,0.04]) },
+  { konu:"Kampanyaya Katılım", metin:(p,az)=>`Her müşteriye gönderilen kampanya e-postasında katılım olasılığı ${(p*100).toFixed(0)}%'dir.\nHer başarısız gönderimde olasılık ${(az*100).toFixed(0)} puan düşmektedir.\n\nGörevi:\n• Her gönderimde random.random() ile rastgele sayı üretin.\n• Sayı ≤ mevcut olasılık ise müşteri katıldı.\n• Kaçıncı gönderimde katılım sağlandığını yazdırın.\n• Olasılık 0'a düşerse "Katılım sağlanamadı" mesajı verin.`, p:()=>pick([0.15,0.20,0.25]), azalma:()=>pick([0.02,0.03,0.04]) },
+  { konu:"Nadir Eşya Kazanma", metin:(p,az)=>`Her sandık açışında nadir eşya kazanma olasılığı ${(p*100).toFixed(0)}%'dir.\nHer başarısız açılışta olasılık ${(az*100).toFixed(0)} puan azalmaktadır.\n\nGörevi:\n• Her açılışta random.random() ile rastgele sayı üretin.\n• Sayı ≤ mevcut olasılık ise eşya kazanıldı.\n• Kaçıncı açılışta eşya kazanıldığını yazdırın.\n• Olasılık 0'a düşerse "Nadir eşya kazanılamadı" mesajı verin.`, p:()=>pick([0.10,0.15,0.20]), azalma:()=>pick([0.02,0.03,0.01]) },
 ];
 
 const RASTGELE_SORULARI = [
-  {
-    konu: "İki Zarın Toplamı",
-    metin: (hedef) =>
-`İki zar sürekli atılmaktadır.
-Her atışta iki zar için random.randint(1, 6) kullanılarak değer üretilir.
-İki zarın toplamının ${hedef} olması beklenmektedir.
-
-Görevi:
-• Her denemede iki zar için ayrı ayrı random.randint(1, 6) kullanın.
-• İki zarın toplamı ${hedef} olana kadar döngü devam etmelidir.
-• Kaçıncı denemede bu toplamın elde edildiğini ekrana yazdırın.`,
-    hedef: () => pick([7, 8, 9, 10, 11, 12])
-  },
-  {
-    konu: "Yazı-Tura Serisi",
-    metin: (hedef) =>
-`Bir para sürekli havaya atılmaktadır.
-Her atışta random.choice(['Yazı', 'Tura']) ile sonuç belirlenmektedir.
-Üst üste ${hedef} kez aynı sonucun (Yazı veya Tura) gelmesi beklenmektedir.
-
-Görevi:
-• Her atışta random.choice() kullanarak Yazı veya Tura üretin.
-• Üst üste ${hedef} aynı sonuç gelene kadar döngü devam etsin.
-• Kaçıncı atışta bu seri tamamlandığını ekrana yazdırın.`,
-    hedef: () => pick([3, 4, 5])
-  },
-  {
-    konu: "Hedef Sayı Bulma",
-    metin: (min, max, hedef) =>
-`Bilgisayar ${min} ile ${max} arasında sürekli rastgele sayı üretmektedir.
-random.randint(${min}, ${max}) ile sayı üretilmektedir.
-Hedef sayı: ${hedef}
-
-Görevi:
-• random.randint(${min}, ${max}) ile her turda rastgele sayı üretin.
-• Üretilen sayı ${hedef} olana kadar döngü çalışmaya devam etsin.
-• Kaçıncı denemede ${hedef} sayısının üretildiğini ekrana yazdırın.`,
-    params: () => { const min=1, max=pick([10,20,50,100]); return { min, max, hedef: Math.floor(Math.random()*(max-min+1))+min }; }
-  },
-  {
-    konu: "İki Öğrencinin Aynı Notu Alması",
-    metin: (notlar) =>
-`Bir sınıfta iki öğrenci her sınavda bağımsız olarak rastgele not almaktadır.
-Notlar şunlardan biri olabilir: ${notlar.join(', ')}
-Her sınav turunda iki öğrenci için random.choice() kullanılmaktadır.
-
-Görevi:
-• Her turda iki öğrenci için ayrı ayrı random.choice(notlar) ile not üretin.
-• İki öğrencinin notu eşit olana kadar döngü çalışmaya devam etsin.
-• Kaçıncı sınavda aynı notu aldıklarını ekrana yazdırın.`,
-    notlar: () => pick([['AA','BA','BB','CB','CC','DC','DD','FF'], ['A','B','C','D','F'], [60,65,70,75,80,85,90,95,100]])
-  },
-  {
-    konu: "Kutudan İstenen Renk Top Çekilmesi",
-    metin: (renkler, hedef) =>
-`Bir kutu içinde farklı renklerde toplar bulunmaktadır.
-Renkler: ${renkler.join(', ')}
-Her seferinde random.choice() ile bir top çekilmekte ve geri konulmaktadır.
-Hedef renk: ${hedef}
-
-Görevi:
-• Her çekilişte random.choice(${JSON.stringify(renkler)}) ile rastgele renk üretin.
-• Çekilen top ${hedef} rengi olana kadar döngü devam etsin.
-• Kaçıncı çekilişte ${hedef} topun çekildiğini ekrana yazdırın.`,
-    params: () => {
-      const setler = [['Kırmızı','Mavi','Yeşil','Sarı'],['Kırmızı','Beyaz','Siyah'],['Mor','Turuncu','Pembe','Gri','Lacivert']];
-      const renkler = pick(setler);
-      return { renkler, hedef: pick(renkler) };
-    }
-  },
-  {
-    konu: "Oyun Kutusundan Efsanevi Eşya",
-    metin: (esyalar, hedef) =>
-`Bir oyun kutusunda farklı nadirlik seviyelerinde eşyalar bulunmaktadır.
-Eşyalar: ${esyalar.join(', ')}
-Her kutu açılışında random.choice() ile rastgele bir eşya çıkmaktadır.
-Hedef eşya: ${hedef}
-
-Görevi:
-• Her açılışta random.choice(${JSON.stringify(esyalar)}) ile eşya belirleyin.
-• Çıkan eşya "${hedef}" olana kadar döngü çalışmaya devam etsin.
-• Kaçıncı açılışta "${hedef}" eşyasının çıktığını ekrana yazdırın.`,
-    params: () => {
-      const setler = [
-        { esyalar: ['Yaygın Kılıç','Nadir Zırh','Destansı Yay','Efsanevi Ejderha Kılıcı'], hedef: 'Efsanevi Ejderha Kılıcı' },
-        { esyalar: ['Sıradan Çanta','Gümüş Madalyon','Altın Taç','Efsanevi Kristal Küre'], hedef: 'Efsanevi Kristal Küre' },
-        { esyalar: ['Düz Ok','Büyülü Taş','Kahraman Kalkanı','Efsanevi Anka Tüyü'], hedef: 'Efsanevi Anka Tüyü' }
-      ];
-      return pick(setler);
-    }
-  },
-  {
-    konu: "Güvenlik Kodu Tahmini",
-    metin: (min, max, kod) =>
-`Bir güvenlik sistemi ${min} ile ${max} arasında rastgele şifre denemeleri yapmaktadır.
-Her denemede random.randint(${min}, ${max}) kullanılmaktadır.
-Kırılacak gizli kod: ${kod}
-
-Görevi:
-• Her denemede random.randint(${min}, ${max}) ile rastgele kod üretin.
-• Üretilen kod ${kod} olana kadar döngü çalışmaya devam etsin.
-• Kaçıncı denemede doğru kodun tahmin edildiğini ekrana yazdırın.`,
-    params: () => { const min=1000, max=9999; return { min, max, kod: Math.floor(Math.random()*(max-min+1))+min }; }
-  },
-  {
-    konu: "İki Zarın İkisi de 6",
-    metin: () =>
-`İki zar sürekli atılmaktadır.
-Her zar için random.randint(1, 6) ile değer üretilmektedir.
-İki zarın da aynı anda 6 gelmesi beklenmektedir.
-
-Görevi:
-• Her denemede iki ayrı random.randint(1, 6) kullanarak zar değeri üretin.
-• Her iki zar da 6 gelene kadar döngü devam etmelidir.
-• Kaçıncı denemede çift 6 elde edildiğini ekrana yazdırın.`,
-    params: () => ({})
-  }
+  { konu:"İki Zarın Toplamı",    hedef:()=>pick([7,8,9,10,11,12]) },
+  { konu:"Yazı-Tura Serisi",     hedef:()=>pick([3,4,5]) },
+  { konu:"Hedef Sayı Bulma",     params:()=>{const mn=1,mx=pick([10,20,50,100]);return{mn,mx,hd:Math.floor(Math.random()*(mx-mn+1))+mn};} },
+  { konu:"İki Öğrenci Aynı Not", notlar:()=>pick([['AA','BA','BB','CB','CC','DC','DD','FF'],['A','B','C','D','F'],[60,70,75,80,85,90,95,100]]) },
+  { konu:"Renkli Top Çekilmesi", params:()=>{const s=pick([['Kırmızı','Mavi','Yeşil','Sarı'],['Kırmızı','Beyaz','Siyah'],['Mor','Turuncu','Pembe','Gri']]);return{renkler:s,hedef:pick(s)};} },
+  { konu:"Efsanevi Eşya",        params:()=>pick([{e:['Yaygın Kılıç','Nadir Zırh','Destansı Yay','Efsanevi Ejderha Kılıcı'],h:'Efsanevi Ejderha Kılıcı'},{e:['Sıradan Çanta','Gümüş Madalyon','Altın Taç','Efsanevi Kristal Küre'],h:'Efsanevi Kristal Küre'}]) },
+  { konu:"Güvenlik Kodu",        params:()=>{const mn=1000,mx=9999;return{mn,mx,kd:Math.floor(Math.random()*(mx-mn+1))+mn};} },
+  { konu:"Çift 6",               params:()=>({}) },
 ];
 
-// ─── YARDIMCI ───────────────────────────────────────────────────────────────
-function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+let seciliStil=null, aktifSoru=null;
 
-let seciliStil = null;
-let aktifSoru = null;
-
-function selectStyle(stil) {
-  seciliStil = stil;
-  document.getElementById('btn-olasilik').classList.toggle('active', stil === 'olasilik');
-  document.getElementById('btn-rastgele').classList.toggle('active', stil === 'rastgele');
-  document.getElementById('generateBtn').disabled = false;
+function selectStyle(stil){
+  seciliStil=stil;
+  document.getElementById('btn-olasilik').classList.toggle('active',stil==='olasilik');
+  document.getElementById('btn-rastgele').classList.toggle('active',stil==='rastgele');
+  document.getElementById('generateBtn').disabled=false;
 }
 
-// ─── SORU ÜRETİCİ ───────────────────────────────────────────────────────────
-function generateQuestion() {
-  if (!seciliStil) return;
-  clearCode();
-  hideFeedback();
-  const hintBox = document.getElementById('hintBox');
-  const hintBtn = document.getElementById('hintBtn');
-  if (hintBox) { hintBox.style.display = 'none'; }
-  if (hintBtn) { hintBtn.classList.remove('active'); hintBtn.textContent = '💡 İpucu'; }
+function generateQuestion(){
+  if(!seciliStil) return;
+  clearCode(); hideFeedback();
+  const hb=document.getElementById('hintBox'), hbtn=document.getElementById('hintBtn');
+  if(hb){hb.style.display='none';} if(hbtn){hbtn.classList.remove('active');hbtn.textContent='💡 İpucu';}
 
-  if (seciliStil === 'olasilik') {
-    const q = pick(OLASILIK_SORULARI);
-    const p = q.p();
-    const azalma = q.azalma();
-    const maxAdim = Math.floor(p / azalma) + 1;
-    aktifSoru = {
-      tip: 'olasilik',
-      konu: q.konu,
-      metin: q.metin(p, azalma, maxAdim),
-      p, azalma, maxAdim,
-      cozum: olasilikCozum(q.konu, p, azalma)
-    };
-    document.getElementById('questionTag').className = 'question-tag tag-olasilik';
-    document.getElementById('questionTag').textContent = 'Olasılık Simülasyonu';
+  if(seciliStil==='olasilik'){
+    const q=pick(OLASILIK_SORULARI), p=q.p(), az=q.azalma();
+    aktifSoru={tip:'olasilik',konu:q.konu,metin:q.metin(p,az),p,az,cozum:pyOlasilikCozum(q.konu,p,az)};
+    document.getElementById('questionTag').className='question-tag tag-olasilik';
+    document.getElementById('questionTag').textContent='Olasılık Simülasyonu';
   } else {
-    const q = pick(RASTGELE_SORULARI);
-    let params = {};
-    let metin = '';
-    let cozum = '';
-
-    if (q.konu === 'İki Zarın Toplamı') {
-      const hedef = q.hedef();
-      params = { hedef };
-      metin = q.metin(hedef);
-      cozum = zarToplamiCozum(hedef);
-    } else if (q.konu === 'Yazı-Tura Serisi') {
-      const hedef = q.hedef();
-      params = { hedef };
-      metin = q.metin(hedef);
-      cozum = yaziTuraCozum(hedef);
-    } else if (q.konu === 'Hedef Sayı Bulma') {
-      const p = q.params();
-      params = p;
-      metin = q.metin(p.min, p.max, p.hedef);
-      cozum = hedefSayiCozum(p.min, p.max, p.hedef);
-    } else if (q.konu === 'İki Öğrencinin Aynı Notu Alması') {
-      const notlar = q.notlar();
-      params = { notlar };
-      metin = q.metin(notlar);
-      cozum = ayniNotCozum(notlar);
-    } else if (q.konu === 'Kutudan İstenen Renk Top Çekilmesi') {
-      const p = q.params();
-      params = p;
-      metin = q.metin(p.renkler, p.hedef);
-      cozum = renkTopCozum(p.renkler, p.hedef);
-    } else if (q.konu === 'Oyun Kutusundan Efsanevi Eşya') {
-      const p = q.params();
-      params = p;
-      metin = q.metin(p.esyalar, p.hedef);
-      cozum = esyaCozum(p.esyalar, p.hedef);
-    } else if (q.konu === 'Güvenlik Kodu Tahmini') {
-      const p = q.params();
-      params = p;
-      metin = q.metin(p.min, p.max, p.kod);
-      cozum = kodCozum(p.min, p.max, p.kod);
-    } else if (q.konu === 'İki Zarın İkisi de 6') {
-      metin = q.metin();
-      cozum = ciftAltiCozum();
-    }
-
-    aktifSoru = { tip: 'rastgele', konu: q.konu, metin, params, cozum };
-    document.getElementById('questionTag').className = 'question-tag tag-rastgele';
-    document.getElementById('questionTag').textContent = 'Rastgele Değer Simülasyonu';
+    const q=pick(RASTGELE_SORULARI); let metin='', cozum='';
+    if(q.konu==='İki Zarın Toplamı'){const h=q.hedef();metin=`İki zar atılmaktadır. random.randint(1,6) ile her zar için değer üretilir.\nİki zarın toplamının ${h} olması beklenmektedir.\n\n• Her denemede iki zar için ayrı ayrı random.randint(1,6) kullanın.\n• Toplam ${h} olana kadar döngü devam etsin.\n• Kaçıncı denemede elde edildiğini yazdırın.`;cozum=`import random\n\ndeneme=0\nwhile True:\n    deneme+=1\n    z1=random.randint(1,6)\n    z2=random.randint(1,6)\n    if z1+z2==${h}:\n        print(f"Toplam ${h}, {deneme}. denemede elde edildi!")\n        break`;}
+    else if(q.konu==='Yazı-Tura Serisi'){const h=q.hedef();metin=`Para atılıyor. random.choice(['Yazı','Tura']) ile sonuç belirleniyor.\nÜst üste ${h} kez aynı sonucun gelmesi beklenmektedir.\n\n• Her atışta random.choice() kullanın.\n• Üst üste ${h} aynı sonuç gelene kadar döngü devam etsin.\n• Kaçıncı atışta bu seri tamamlandığını yazdırın.`;cozum=`import random\n\ndeneme=0\nseri=0\nonceki=None\nwhile seri<${h}:\n    deneme+=1\n    sonuc=random.choice(["Yazı","Tura"])\n    if sonuc==onceki:\n        seri+=1\n    else:\n        seri=1\n    onceki=sonuc\nprint(f"Üst üste ${h} aynı sonuç {deneme}. atışta tamamlandı!")`;}
+    else if(q.konu==='Hedef Sayı Bulma'){const p=q.params();metin=`Bilgisayar ${p.mn}–${p.mx} arasında sayı üretiyor. random.randint(${p.mn},${p.mx}) kullanılıyor.\nHedef: ${p.hd}\n\n• Her turda random.randint(${p.mn},${p.mx}) kullanın.\n• Sayı ${p.hd} olana kadar döngü devam etsin.\n• Kaçıncı denemede üretildiğini yazdırın.`;cozum=`import random\n\ndeneme=0\nwhile True:\n    deneme+=1\n    sayi=random.randint(${p.mn},${p.mx})\n    if sayi==${p.hd}:\n        print(f"${p.hd} sayısı {deneme}. denemede üretildi!")\n        break`;}
+    else if(q.konu==='İki Öğrenci Aynı Not'){const nl=q.notlar();metin=`İki öğrenci bağımsız not alıyor. Notlar: ${nl.join(', ')}\nHer turda random.choice() kullanılıyor.\n\n• Her turda iki öğrenci için ayrı random.choice() kullanın.\n• İkisinin notu eşit olana kadar devam etsin.\n• Kaçıncı sınavda aynı notu aldıklarını yazdırın.`;cozum=`import random\n\nnotlar=${JSON.stringify(nl)}\ndeneme=0\nwhile True:\n    deneme+=1\n    n1=random.choice(notlar)\n    n2=random.choice(notlar)\n    if n1==n2:\n        print(f"İki öğrenci {deneme}. sınavda aynı notu ({n1}) aldı!")\n        break`;}
+    else if(q.konu==='Renkli Top Çekilmesi'){const p=q.params();metin=`Kutuda renkli toplar var: ${p.renkler.join(', ')}\nHedef renk: ${p.hedef}\n\n• Her çekilişte random.choice() kullanın.\n• ${p.hedef} rengi gelene kadar devam etsin.\n• Kaçıncı çekilişte geldiğini yazdırın.`;cozum=`import random\n\nrenkler=${JSON.stringify(p.renkler)}\ndeneme=0\nwhile True:\n    deneme+=1\n    top=random.choice(renkler)\n    if top=="${p.hedef}":\n        print(f"${p.hedef} top {deneme}. çekilişte çıktı!")\n        break`;}
+    else if(q.konu==='Efsanevi Eşya'){const p=q.params();metin=`Oyun kutusundan eşya çıkıyor: ${p.e.join(', ')}\nHedef: ${p.h}\n\n• Her açılışta random.choice() kullanın.\n• "${p.h}" çıkana kadar devam etsin.\n• Kaçıncı açılışta çıktığını yazdırın.`;cozum=`import random\n\nesyalar=${JSON.stringify(p.e)}\ndeneme=0\nwhile True:\n    deneme+=1\n    esya=random.choice(esyalar)\n    if esya=="${p.h}":\n        print(f"'${p.h}' {deneme}. açılışta elde edildi!")\n        break`;}
+    else if(q.konu==='Güvenlik Kodu'){const p=q.params();metin=`Güvenlik sistemi ${p.mn}–${p.mx} arasında şifre deniyor. Gizli kod: ${p.kd}\n\n• Her denemede random.randint(${p.mn},${p.mx}) kullanın.\n• Kod ${p.kd} olana kadar devam etsin.\n• Kaçıncı denemede bulunduğunu yazdırın.`;cozum=`import random\n\ndeneme=0\nwhile True:\n    deneme+=1\n    tahmin=random.randint(${p.mn},${p.mx})\n    if tahmin==${p.kd}:\n        print(f"Kod ${p.kd}, {deneme}. denemede kırıldı!")\n        break`;}
+    else{metin=`İki zar atılıyor. Her zar için random.randint(1,6) kullanılıyor.\nİki zarın da 6 gelmesi beklenmektedir.\n\n• Her denemede iki ayrı randint(1,6) kullanın.\n• İkisi de 6 gelene kadar devam etsin.\n• Kaçıncı denemede çift 6 geldiğini yazdırın.`;cozum=`import random\n\ndeneme=0\nwhile True:\n    deneme+=1\n    z1=random.randint(1,6)\n    z2=random.randint(1,6)\n    if z1==6 and z2==6:\n        print(f"Çift 6, {deneme}. denemede geldi!")\n        break`;}
+    aktifSoru={tip:'rastgele',konu:q.konu,metin,cozum};
+    document.getElementById('questionTag').className='question-tag tag-rastgele';
+    document.getElementById('questionTag').textContent='Rastgele Değer Simülasyonu';
   }
-
-  document.getElementById('questionText').textContent = aktifSoru.metin;
-  document.getElementById('questionCard').style.display = 'block';
-  document.getElementById('codeCard').style.display = 'block';
+  document.getElementById('questionText').textContent=aktifSoru.metin;
+  document.getElementById('questionCard').style.display='block';
+  document.getElementById('codeCard').style.display='block';
   document.getElementById('codeArea').focus();
 }
 
-// ─── ÇÖZÜM ŞABLONLARİ ───────────────────────────────────────────────────────
-function olasilikCozum(konu, p, azalma) {
-return `import random
+function pyOlasilikCozum(konu,p,az){
+return `import random\n\nolasilik=${p.toFixed(2)}\ndeneme=0\n\nwhile olasilik>0:\n    deneme+=1\n    sayi=random.random()\n    if sayi<=olasilik:\n        print(f"${konu}: {deneme}. denemede gerçekleşti!")\n        break\n    olasilik-=${az.toFixed(2)}\nelse:\n    print("${konu}: Gerçekleşmedi.")`;}
 
-olasilik = ${p.toFixed(2)}
-deneme = 0
-
-while olasilik > 0:
-    deneme += 1
-    sayi = random.random()
-    if sayi <= olasilik:
-        print(f"${konu}: {deneme}. denemede gerçekleşti!")
-        break
-    olasilik -= ${azalma.toFixed(2)}
-else:
-    print("${konu}: Gerçekleşmedi.")`;
-}
-
-function zarToplamiCozum(hedef) {
-return `import random
-
-deneme = 0
-
-while True:
-    deneme += 1
-    zar1 = random.randint(1, 6)
-    zar2 = random.randint(1, 6)
-    if zar1 + zar2 == ${hedef}:
-        print(f"Toplam ${hedef}, {deneme}. denemede elde edildi!")
-        break`;
-}
-
-function yaziTuraCozum(hedef) {
-return `import random
-
-deneme = 0
-seri = 0
-onceki = None
-
-while seri < ${hedef}:
-    deneme += 1
-    sonuc = random.choice(["Yazı", "Tura"])
-    if sonuc == onceki:
-        seri += 1
-    else:
-        seri = 1
-    onceki = sonuc
-
-print(f"Üst üste ${hedef} aynı sonuç {deneme}. atışta tamamlandı!")`;
-}
-
-function hedefSayiCozum(min, max, hedef) {
-return `import random
-
-deneme = 0
-
-while True:
-    deneme += 1
-    sayi = random.randint(${min}, ${max})
-    if sayi == ${hedef}:
-        print(f"${hedef} sayısı {deneme}. denemede üretildi!")
-        break`;
-}
-
-function ayniNotCozum(notlar) {
-  const notStr = JSON.stringify(notlar);
-return `import random
-
-notlar = ${notStr}
-deneme = 0
-
-while True:
-    deneme += 1
-    not1 = random.choice(notlar)
-    not2 = random.choice(notlar)
-    if not1 == not2:
-        print(f"İki öğrenci {deneme}. sınavda aynı notu ({not1}) aldı!")
-        break`;
-}
-
-function renkTopCozum(renkler, hedef) {
-  const r = JSON.stringify(renkler);
-return `import random
-
-renkler = ${r}
-deneme = 0
-
-while True:
-    deneme += 1
-    top = random.choice(renkler)
-    if top == "${hedef}":
-        print(f"${hedef} renk top {deneme}. çekilişte çıktı!")
-        break`;
-}
-
-function esyaCozum(esyalar, hedef) {
-  const e = JSON.stringify(esyalar);
-return `import random
-
-esyalar = ${e}
-deneme = 0
-
-while True:
-    deneme += 1
-    esya = random.choice(esyalar)
-    if esya == "${hedef}":
-        print(f"'{hedef}' {deneme}. açılışta elde edildi!")
-        break`;
-}
-
-function kodCozum(min, max, kod) {
-return `import random
-
-deneme = 0
-
-while True:
-    deneme += 1
-    tahmin = random.randint(${min}, ${max})
-    if tahmin == ${kod}:
-        print(f"Güvenlik kodu ${kod} — {deneme}. denemede kırıldı!")
-        break`;
-}
-
-function ciftAltiCozum() {
-return `import random
-
-deneme = 0
-
-while True:
-    deneme += 1
-    zar1 = random.randint(1, 6)
-    zar2 = random.randint(1, 6)
-    if zar1 == 6 and zar2 == 6:
-        print(f"Çift 6, {deneme}. denemede geldi!")
-        break`;
-}
-
-// ─── KOD KONTROL ────────────────────────────────────────────────────────────
-function checkCode() {
-  if (!aktifSoru) return;
-  const kod = document.getElementById('codeArea').value.trim();
-  if (!kod) { alert('Lütfen önce Python kodunuzu yazın.'); return; }
-
-  const tip = aktifSoru.tip;
-  const dogru = [];
-  const hatali = [];
-  const ipuclari = [];
-
-  // 1) import random
-  if (/import\s+random/.test(kod)) {
-    dogru.push('import random modülü doğru biçimde import edilmiş.');
+function checkCode(){
+  if(!aktifSoru) return;
+  const kod=document.getElementById('codeArea').value.trim();
+  if(!kod){alert('Lütfen önce Python kodunuzu yazın.');return;}
+  const tip=aktifSoru.tip, dogru=[], hatali=[], ipuclari=[];
+  if(/import\s+random/.test(kod)) dogru.push('import random modülü doğru import edilmiş.');
+  else{hatali.push('import random satırı eksik.');ipuclari.push('Kodun en üstüne "import random" satırını ekle.');}
+  if(/while\s+/.test(kod)) dogru.push('while döngüsü kullanılmış.');
+  else if(/for\s+/.test(kod)) dogru.push('for döngüsü kullanılmış (while tercih edilir).');
+  else{hatali.push('Döngü (while/for) bulunamadı.');ipuclari.push('"while True:" ile her denemeyi simüle et.');}
+  if(/deneme|sayac|tur|yil|hafta/i.test(kod)) dogru.push('Deneme sayacı tanımlanmış.');
+  else{hatali.push('Deneme sayacı tanımlanmamış.');ipuclari.push('"deneme=0" gibi sayaç tanımla, her turda 1 artır.');}
+  if(tip==='olasilik'){
+    if(/random\.random\(\)/.test(kod)) dogru.push('random.random() kullanımı doğru.');
+    else{hatali.push('random.random() kullanımı eksik.');ipuclari.push('"sayi=random.random()" ile 0-1 arası sayı üret.');}
+    if(/-=\s*[\d.]+/.test(kod)||/olasilik\s*=\s*olasilik\s*-/.test(kod)) dogru.push('Başarısız denemede olasılık azaltılmış.');
+    else{hatali.push('Olasılık azaltılmıyor.');ipuclari.push('"olasilik-=azalma" ile olasılığı düşür.');}
+    if(/olasilik\s*[<=>]+\s*0|else:/.test(kod)) dogru.push('Olasılık 0\'a düşünce "gerçekleşmedi" durumu var.');
+    else{hatali.push('"Gerçekleşmedi" mesajı eksik.');ipuclari.push('while döngüsüne else bloğu ekle.');}
+    if(/<=\s*olasilik|sayi\s*<=|olasilik\s*>=/.test(kod)) dogru.push('Başarı şartı doğru (sayı ≤ olasılık).');
+    else{hatali.push('Başarı şartı yanlış/eksik.');ipuclari.push('"if sayi<=olasilik:" şeklinde yaz.');}
   } else {
-    hatali.push('import random satırı eksik.');
-    ipuclari.push('Kodun en üstüne "import random" satırını eklemelisin.');
+    if(/random\.randint\(|random\.choice\(/.test(kod)) dogru.push('random.randint()/random.choice() kullanımı var.');
+    else{hatali.push('random.randint() veya random.choice() eksik.');ipuclari.push('Değer üretmek için uygun random fonksiyonu kullan.');}
+    if(/if\s+.*==|if\s+.*\+/.test(kod)) dogru.push('Hedef şart kontrolü for if ile yapılmış.');
+    else{hatali.push('Hedef şartı kontrol eden if eksik.');ipuclari.push('Üretilen değer hedefle eşleştiğinde if ile kontrol et.');}
   }
+  if(/\bbreak\b/.test(kod)) dogru.push('break ile döngü sonlandırılmış.');
+  else if(/\breturn\b/.test(kod)) dogru.push('return ile fonksiyon sonlandırılmış.');
+  else{hatali.push('break veya return eksik.');ipuclari.push('Şart sağlanınca "break" ile döngüyü durdur.');}
+  if(/print\s*\(/.test(kod)) dogru.push('print() ile sonuç yazdırılıyor.');
+  else{hatali.push('print() eksik.');ipuclari.push('Sonucu print() ile ekrana yazdır.');}
 
-  // 2) Döngü
-  if (/while\s+/.test(kod)) {
-    dogru.push('while döngüsü kullanılmış (tercih edilen yöntem).');
-  } else if (/for\s+/.test(kod)) {
-    dogru.push('for döngüsü kullanılmış (while tercih edilir ama kabul edilebilir).');
-  } else {
-    hatali.push('Herhangi bir döngü (while/for) bulunamadı.');
-    ipuclari.push('"while True:" veya koşullu bir while döngüsü kurarak her denemeyi simüle etmelisin.');
-  }
-
-  // 3) Sayaç değişkeni
-  if (/deneme|sayac|sayi_|tur|yil|hafta|iterasyon/i.test(kod)) {
-    dogru.push('Deneme/yıl/hafta sayacı tanımlanmış.');
-  } else {
-    hatali.push('Deneme sayacı (deneme, sayac, tur vb.) tanımlanmamış.');
-    ipuclari.push('"deneme = 0" gibi bir sayaç değişkeni tanımla ve her döngü turunda 1 artır.');
-  }
-
-  // 4a) Olasılık sorusu: random.random()
-  if (tip === 'olasilik') {
-    if (/random\.random\(\)/.test(kod)) {
-      dogru.push('random.random() ile 0-1 arasında rastgele sayı üretimi yapılmış.');
-    } else {
-      hatali.push('random.random() kullanımı eksik.');
-      ipuclari.push('Olasılık simülasyonlarında "sayi = random.random()" kullanarak 0-1 arası sayı üret.');
-    }
-
-    // Olasılık azaltma
-    if (/-=\s*[\d.]+/.test(kod) || /olasilik\s*=\s*olasilik\s*-/.test(kod)) {
-      dogru.push('Başarısız denemede olasılık azaltılmış.');
-    } else {
-      hatali.push('Başarısız denemede olasılık azaltılmıyor.');
-      ipuclari.push('Her başarısız denemede "olasilik -= azalma_miktari" ifadesiyle olasılığı düşür.');
-    }
-
-    // Olasılık 0 kontrolü
-    if (/olasilik\s*[<=>]+\s*0|olasilik\s*<=\s*0|else:/.test(kod)) {
-      dogru.push('Olasılık 0\'a düştüğünde "gerçekleşmedi" durumu ele alınmış.');
-    } else {
-      hatali.push('Olasılık 0\'a düşünce "gerçekleşmedi" mesajı verilmiyor.');
-      ipuclari.push('Döngü sonunda else bloğu veya ayrı bir if kontrolüyle "Gerçekleşmedi" mesajı eklemelisin.');
-    }
-
-    // Şart kontrolü (<=)
-    if (/<=\s*olasilik|sayi\s*<=|olasilik\s*>=/.test(kod)) {
-      dogru.push('Başarı şartı doğru biçimde yazılmış (random sayı ≤ olasılık).');
-    } else if (/if\s+random\.random/.test(kod) || /if\s+sayi/.test(kod) || /if\s+r\b/.test(kod)) {
-      dogru.push('if kontrolü mevcut, şart mantığı gözden geçirilmeli.');
-    } else {
-      hatali.push('Başarı şartı (if sayi <= olasilik) eksik veya yanlış.');
-      ipuclari.push('"if sayi <= olasilik:" şeklinde başarı şartını kontrol etmelisin.');
-    }
-  }
-
-  // 4b) Rastgele değer sorusu
-  if (tip === 'rastgele') {
-    const kullanimiVar = /random\.randint\(|random\.choice\(/.test(kod);
-    if (kullanimiVar) {
-      dogru.push('random.randint() veya random.choice() ile rastgele değer üretimi yapılmış.');
-    } else {
-      hatali.push('random.randint() veya random.choice() kullanımı eksik.');
-      ipuclari.push('Değer üretmek için "random.randint(min, max)" veya "random.choice(liste)" kullanmalısın.');
-    }
-
-    // Şart kontrolü
-    if (/if\s+.*==|if\s+.*\+/.test(kod)) {
-      dogru.push('Hedef değer veya koşul kontrolü için if ifadesi kullanılmış.');
-    } else {
-      hatali.push('Hedef şartı kontrol eden bir if ifadesi bulunamadı.');
-      ipuclari.push('Üretilen değer/toplam hedefle eşleştiğinde bunu if ile kontrol etmelisin.');
-    }
-  }
-
-  // 5) break / return ile durdurma
-  if (/\bbreak\b/.test(kod)) {
-    dogru.push('break ile döngü başarılı durumda sonlandırılmış.');
-  } else if (/\breturn\b/.test(kod)) {
-    dogru.push('return ile fonksiyon başarılı durumda sonlandırılmış.');
-  } else {
-    hatali.push('Başarı durumunda break veya return kullanılmamış.');
-    ipuclari.push('Şart sağlandığında "break" ile döngüyü durdurmalısın.');
-  }
-
-  // 6) print ile çıktı
-  if (/print\s*\(/.test(kod)) {
-    dogru.push('print() ile sonuç ekrana yazdırılıyor.');
-  } else {
-    hatali.push('print() ifadesi yok — kaçıncı denemede gerçekleştiği yazdırılmıyor.');
-    ipuclari.push('Sonucu print() ile göstermelisin. Örn: print(f"Olay {deneme}. denemede gerçekleşti!")');
-  }
-
-  // PUAN
-  const toplam = 7;
-  const puan = dogru.length;
-  const oran = Math.round((puan / toplam) * 100);
-
-  // DOM GÜNCELLEMESİ
-  const scoreBar = document.getElementById('scoreBar');
-  scoreBar.style.width = oran + '%';
-  scoreBar.className = 'bar-fill ' + (oran >= 70 ? 'bar-green' : oran >= 40 ? 'bar-yellow' : 'bar-red');
-  document.getElementById('scoreNum').textContent = puan + '/' + toplam;
-
-  const fbCorrect = document.getElementById('fbCorrect');
-  const fbWrong = document.getElementById('fbWrong');
-  const fbTip = document.getElementById('fbTip');
-
-  const correctList = document.getElementById('fbCorrectList');
-  const wrongList = document.getElementById('fbWrongList');
-  const tipList = document.getElementById('fbTipList');
-
-  correctList.innerHTML = dogru.map(d => `<li class="check-ok">${d}</li>`).join('');
-  wrongList.innerHTML = hatali.map(h => `<li class="check-err">${h}</li>`).join('');
-  tipList.innerHTML = ipuclari.map(i => `<li style="margin-bottom:0.3rem">${i}</li>`).join('');
-
-  fbCorrect.style.display = dogru.length > 0 ? 'block' : 'none';
-  fbWrong.style.display = hatali.length > 0 ? 'block' : 'none';
-  fbTip.style.display = ipuclari.length > 0 ? 'block' : 'none';
-
-  document.getElementById('fbSolution').textContent = aktifSoru.cozum;
-
-  const fc = document.getElementById('feedbackCard');
-  fc.classList.add('feedback-section');
-  fc.style.display = 'block';
-  fc.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  const toplam=7, puan=dogru.length, oran=Math.round(puan/toplam*100);
+  const sb=document.getElementById('scoreBar');
+  sb.style.width=oran+'%';
+  sb.className='bar-fill '+(oran>=70?'bar-green':oran>=40?'bar-yellow':'bar-red');
+  document.getElementById('scoreNum').textContent=puan+'/'+toplam;
+  document.getElementById('fbCorrectList').innerHTML=dogru.map(d=>`<li class="check-ok">${d}</li>`).join('');
+  document.getElementById('fbWrongList').innerHTML=hatali.map(h=>`<li class="check-err">${h}</li>`).join('');
+  document.getElementById('fbTipList').innerHTML=ipuclari.map(i=>`<li style="margin-bottom:0.3rem">${i}</li>`).join('');
+  document.getElementById('fbCorrect').style.display=dogru.length>0?'block':'none';
+  document.getElementById('fbWrong').style.display=hatali.length>0?'block':'none';
+  document.getElementById('fbTip').style.display=ipuclari.length>0?'block':'none';
+  document.getElementById('fbSolution').textContent=aktifSoru.cozum;
+  const fc=document.getElementById('feedbackCard');
+  fc.style.display='block';
+  fc.scrollIntoView({behavior:'smooth',block:'start'});
 }
 
-function clearCode() {
-  document.getElementById('codeArea').value = '';
+function clearCode(){ document.getElementById('codeArea').value=''; }
+function hideFeedback(){ document.getElementById('feedbackCard').style.display='none'; }
+function toggleHint(){
+  const box=document.getElementById('hintBox'), btn=document.getElementById('hintBtn');
+  if(!aktifSoru) return;
+  if(box.style.display==='none'){
+    document.getElementById('hintCode').textContent=aktifSoru.cozum;
+    box.style.display='block'; btn.classList.add('active'); btn.textContent='🙈 İpucunu Gizle';
+  } else { box.style.display='none'; btn.classList.remove('active'); btn.textContent='💡 İpucu'; }
 }
-
-function toggleHint() {
-  const box = document.getElementById('hintBox');
-  const btn = document.getElementById('hintBtn');
-  if (!aktifSoru) return;
-  if (box.style.display === 'none') {
-    document.getElementById('hintCode').textContent = aktifSoru.cozum;
-    box.style.display = 'block';
-    btn.classList.add('active');
-    btn.textContent = '🙈 İpucunu Gizle';
-  } else {
-    box.style.display = 'none';
-    btn.classList.remove('active');
-    btn.textContent = '💡 İpucu';
-  }
-}
-
-function copyHint() {
-  const code = document.getElementById('hintCode').textContent;
-  navigator.clipboard.writeText(code).then(() => {
-    const btn = document.getElementById('copyBtn');
-    btn.textContent = '✓ Kopyalandı';
-    setTimeout(() => { btn.textContent = 'Kopyala'; }, 1800);
+function copyHint(){
+  navigator.clipboard.writeText(document.getElementById('hintCode').textContent).then(()=>{
+    const b=document.getElementById('copyBtn'); b.textContent='✓ Kopyalandı';
+    setTimeout(()=>{b.textContent='Kopyala';},1800);
   });
 }
 
-function hideFeedback() {
-  document.getElementById('feedbackCard').style.display = 'none';
-}
-</script>
-
-<!-- KULLANIM AÇIKLAMASI (sayfa altında) -->
-<div style="max-width:860px;margin:0 auto 2rem;padding:1rem 1.4rem;background:#fff;border-radius:14px;border:1px solid #e2e8f0;font-size:0.85rem;color:#718096;line-height:1.7;">
-  <strong style="color:#4a5568;display:block;margin-bottom:0.4rem">📖 Kullanım Kılavuzu</strong>
-  1. Soru stilini seç (Olasılık veya Rastgele Değer simülasyonu).<br>
-  2. "Soru Üret" butonuna tıkla — her tıklamada farklı konu ve parametrelerle yeni soru gelir.<br>
-  3. Karanlık kod alanına Python kodunu yaz.<br>
-  4. "Kodu Kontrol Et" butonuna bas — import, döngü, sayaç, şart ve print kullanımı otomatik analiz edilir.<br>
-  5. Geri bildirim kartındaki yeşil (doğru) ve kırmızı (eksik) maddeleri incele, ipuçlarını oku.<br>
-  6. Örnek doğru çözümü incele.<br>
-  7. "Tekrar Soru Üret" ile aynı stilden yeni soru al ve kod alanı temizlenir.
-</div>
-
-<script src="https://cdn.jsdelivr.net/pyodide/v0.25.1/full/pyodide.js"></script>
-<script>
-let pyodide = null;
-let pyodideLoading = false;
-
-async function loadPyodideIfNeeded() {
-  if (pyodide) return pyodide;
-  if (pyodideLoading) return null;
-  pyodideLoading = true;
-  const btn = document.getElementById('runBtn');
-  btn.textContent = '⏳ Python yükleniyor...';
-  btn.disabled = true;
-  pyodide = await loadPyodide({ indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.25.1/full/' });
-  btn.textContent = '▶ Kodu Çalıştır';
-  btn.disabled = false;
+// Pyodide
+let pyodide=null, pyodideLoading=false;
+async function loadPyodideIfNeeded(){
+  if(pyodide) return pyodide;
+  if(pyodideLoading) return null;
+  pyodideLoading=true;
+  const btn=document.getElementById('runBtn');
+  btn.textContent='⏳ Python yükleniyor...'; btn.disabled=true;
+  pyodide=await loadPyodide({indexURL:'https://cdn.jsdelivr.net/pyodide/v0.25.1/full/'});
+  btn.textContent='▶ Kodu Çalıştır'; btn.disabled=false;
   return pyodide;
 }
-
-async function runCode() {
-  const kod = document.getElementById('codeArea').value.trim();
-  if (!kod) { alert('Lütfen önce Python kodunuzu yazın.'); return; }
-
-  const btn = document.getElementById('runBtn');
-  const outputBox = document.getElementById('outputBox');
-  const outputText = document.getElementById('outputText');
-  const outputStatus = document.getElementById('outputStatus');
-
-  outputBox.style.display = 'block';
-  outputText.style.color = '#e6edf3';
-  outputText.textContent = '⏳ Çalıştırılıyor...';
-  outputStatus.textContent = '';
-
-  const py = await loadPyodideIfNeeded();
-  if (!py) return;
-
-  // stdout'u yakala
-  let output = '';
-  py.setStdout({ batched: (text) => { output += text + '\n'; } });
-  py.setStderr({ batched: (text) => { output += '⚠ ' + text + '\n'; } });
-
-  const start = performance.now();
-  try {
+async function runCode(){
+  const kod=document.getElementById('codeArea').value.trim();
+  if(!kod){alert('Lütfen önce Python kodunuzu yazın.');return;}
+  const outputBox=document.getElementById('outputBox');
+  const outputText=document.getElementById('outputText');
+  const outputStatus=document.getElementById('outputStatus');
+  outputBox.style.display='block'; outputText.style.color='#e6edf3';
+  outputText.textContent='⏳ Çalıştırılıyor...'; outputStatus.textContent='';
+  const py=await loadPyodideIfNeeded(); if(!py) return;
+  let output='';
+  py.setStdout({batched:(t)=>{output+=t+'\n';}});
+  py.setStderr({batched:(t)=>{output+='⚠ '+t+'\n';}});
+  const start=performance.now();
+  try{
     await py.runPythonAsync(kod);
-    const ms = (performance.now() - start).toFixed(0);
-    outputText.textContent = output.trim() || '(Çıktı yok)';
-    outputStatus.innerHTML = `<span style="color:#48bb78;font-weight:600;">✓ Başarılı</span> <span style="color:#718096">${ms}ms</span>`;
-  } catch (err) {
-    const ms = (performance.now() - start).toFixed(0);
-    outputText.style.color = '#fc8181';
-    outputText.textContent = err.message;
-    outputStatus.innerHTML = `<span style="color:#fc8181;font-weight:600;">✗ Hata</span> <span style="color:#718096">${ms}ms</span>`;
+    const ms=(performance.now()-start).toFixed(0);
+    outputText.textContent=output.trim()||'(Çıktı yok)';
+    outputStatus.innerHTML=`<span style="color:#48bb78;font-weight:600;">✓ Başarılı</span> <span style="color:#718096">${ms}ms</span>`;
+  }catch(err){
+    outputText.style.color='#fc8181'; outputText.textContent=err.message;
+    outputStatus.innerHTML=`<span style="color:#fc8181;font-weight:600;">✗ Hata</span>`;
   }
 }
+
+// ══════════════════════════════════════════════════════════════════════════
+// KUYRUK PANELI JS  (qs_ prefix ile çakışma önlendi)
+// ══════════════════════════════════════════════════════════════════════════
+function qsRand(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
+function qsPick(arr){return arr[Math.floor(Math.random()*arr.length)];}
+function qsRn(){return String(Math.floor(Math.random()*100)).padStart(2,'0');}
+function qsPad(n){return String(n).padStart(2,'0');}
+
+function qsMakeDist(values){
+  const n=values.length; let rem=100, probs=[];
+  for(let i=0;i<n-1;i++){const minP=5,maxP=Math.min(55,rem-5*(n-1-i));const p=qsRand(minP,maxP);probs.push(p);rem-=p;}
+  probs.push(rem);
+  for(let i=probs.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[probs[i],probs[j]]=[probs[j],probs[i]];}
+  let cum=0;
+  return values.map((v,i)=>{const p=probs[i],lo=cum,hi=cum+p-1;cum+=p;return{value:v,prob:(p/100).toFixed(2),lo,hi};});
+}
+function qsLookup(dist,rnStr){const n=parseInt(rnStr,10);for(const r of dist)if(n>=r.lo&&n<=r.hi)return r.value;return dist[dist.length-1].value;}
+
+const QS_SCENARIOS=[
+  {name:'Banka Şubesi',desc:(n)=>`Bir banka şubesine gelen müşterilere ait benzetim modelini kurmak istiyoruz. Bankaya gelen ilk ${n} müşteri için servis süreci simüle edilecektir. İlk müşteri 0 anında gelmektedir. Bankada tek bir vezne bulunmaktadır ve müşterilere geliş sırasına göre hizmet verilmektedir.`},
+  {name:'Hastane Kayıt',desc:(n)=>`Bir hastane kayıt birimine gelen hastalara ait benzetim modelini kurmak istiyoruz. İlk ${n} hasta için kayıt süreci simüle edilecektir. İlk hasta 0 anında gelmektedir. Birimde tek bir personel görev yapmaktadır.`},
+  {name:'Market Kasa',desc:(n)=>`Bir marketteki tek kasaya gelen müşterilere ait benzetim modelini kurmak istiyoruz. İlk ${n} müşteri için ödeme süreci simüle edilecektir. İlk müşteri 0 anında gelmektedir.`},
+  {name:'Teknik Servis',desc:(n)=>`Bir teknik servise getirilen cihazlara ait benzetim modelini kurmak istiyoruz. İlk ${n} cihaz için onarım süreci simüle edilecektir. Serviste tek bir teknisyen çalışmaktadır.`},
+  {name:'PTT Şubesi',desc:(n)=>`Bir PTT şubesine gelen müşterilere ait benzetim modelini kurmak istiyoruz. İlk ${n} müşteri için işlem süreci simüle edilecektir. Şubede tek bir memur görev yapmaktadır.`},
+];
+
+let QS=null;
+
+function qsGenerateQ(){
+  const sc=qsPick(QS_SCENARIOS); const nC=qsRand(5,8);
+  const aVals=qsPick([[1,2,3,4],[1,2,3],[2,3,4],[1,2,4,5],[2,3,5],[1,3,4],[2,4,6]]);
+  const sVals=qsPick([[2,3,4],[2,3,5],[3,4,5],[2,4,6],[3,4,6],[2,3,4,5],[1,2,3,4]]);
+  const aDist=qsMakeDist(aVals), sDist=qsMakeDist(sVals);
+  const rnA=Array.from({length:nC},()=>qsRn()), rnS=Array.from({length:nC},()=>qsRn());
+  const customers=[]; let prevEnd=0;
+  for(let i=0;i<nC;i++){
+    const ia=i===0?null:qsLookup(aDist,rnA[i]);
+    const sd=qsLookup(sDist,rnS[i]);
+    const at=i===0?0:customers[i-1].at+ia;
+    const ss=Math.max(at,prevEnd); const se=ss+sd;
+    const wq=ss-at, tis=se-at, idle=i===0?0:Math.max(0,at-customers[i-1].se);
+    customers.push({no:i+1,rnA:rnA[i],rnS:rnS[i],ia,at,sd,ss,se,wq,tis,idle});
+    prevEnd=se;
+  }
+  const totalSd=customers.reduce((s,c)=>s+c.sd,0);
+  const totalIdle=customers.reduce((s,c)=>s+c.idle,0);
+  const simEnd=customers[customers.length-1].se;
+  const util=totalSd/simEnd*100;
+  const avgWq=customers.reduce((s,c)=>s+c.wq,0)/nC;
+  const avgTis=customers.reduce((s,c)=>s+c.tis,0)/nC;
+  const maxWq=Math.max(...customers.map(c=>c.wq));
+  return{sc,nC,aDist,sDist,rnA,rnS,customers,totalSd,totalIdle,simEnd,util,avgWq,avgTis,maxWq};
+}
+
+function qsRenderArrivalDist(dist){
+  const t=document.getElementById('qs-tblArrival');
+  t.innerHTML=`<tr><th>Alternatif</th><th>Süre (dk)</th><th>Olasılık</th><th>Rassal Sayı Aralığı</th></tr>`;
+  dist.forEach((r,i)=>t.innerHTML+=`<tr><td>A${i+1}</td><td>${r.value}</td><td>${r.prob}</td><td>${qsPad(r.lo)}–${qsPad(r.hi)}</td></tr>`);
+}
+function qsRenderServiceDist(dist){
+  const t=document.getElementById('qs-tblService');
+  t.innerHTML=`<tr><th>Alternatif</th><th>Süre (dk)</th><th>Olasılık</th><th>Rassal Sayı Aralığı</th></tr>`;
+  dist.forEach((r,i)=>t.innerHTML+=`<tr><td>S${i+1}</td><td>${r.value}</td><td>${r.prob}</td><td>${qsPad(r.lo)}–${qsPad(r.hi)}</td></tr>`);
+}
+function qsRenderRNG(q){
+  const t=document.getElementById('qs-tblRNG');
+  t.innerHTML=`<tr><th>Müşteri No</th><th>Rassal Sayı (Varışlararası)</th><th>Rassal Sayı (Servis)</th></tr>`;
+  q.customers.forEach(c=>t.innerHTML+=`<tr><td>${c.no}</td><td>${c.rnA}</td><td>${c.rnS}</td></tr>`);
+}
+function qsRenderSimTable(q){
+  const t=document.getElementById('qs-tblSim');
+  const TH=(label,tip)=>`<th><span class="tip-wrap">${label} <span class="tip" data-tip="${tip}">?</span></span></th>`;
+  t.innerHTML=`<tr>
+    <th>Müşteri No</th>
+    ${TH('Varışlararası Süre (dk)','Rassal sayıyı Varışlar Arası Süre tablosundaki aralıklarla eşleştir → karşılık gelen süreyi yaz.')}
+    ${TH('Varış Zamanı (dk)','1. müşteri → 0\nDiğerleri → Önceki Varış Zamanı + Bu müşterinin Varışlararası Süresi')}
+    ${TH('Servis Süresi (dk)','Rassal sayıyı Servis Süresi tablosundaki aralıklarla eşleştir → karşılık gelen süreyi yaz.')}
+    ${TH('Servis Başlangıç (dk)','Servis Başlangıç = max(Varış Zamanı, Önceki Servis Bitişi)\nMüşteri bekliyorsa önceki bitiş, değilse kendi varışı.')}
+    ${TH('Servis Bitiş (dk)','Servis Bitiş = Servis Başlangıç + Servis Süresi')}
+    ${TH('Kuyrukta Bekleme (dk)','Kuyrukta Bekleme = Servis Başlangıç − Varış Zamanı\nBeklemediyse 0 yaz.')}
+    ${TH('Sistemde Kalma (dk)','Sistemde Kalma = Servis Bitiş − Varış Zamanı')}
+  </tr>`;
+  q.customers.forEach((c,i)=>{
+    t.innerHTML+=`<tr>
+      <td style="font-weight:700;background:#edf2f7;">${c.no}</td>
+      <td>${i===0?`<input disabled value="—">`:`<div><input type="text" id="qs_ia_${i}" placeholder="?"><span class="correct-hint" id="qs_h_ia_${i}"></span></div>`}</td>
+      <td>${i===0?`<input disabled value="0">`:`<div><input type="text" id="qs_at_${i}" placeholder="?"><span class="correct-hint" id="qs_h_at_${i}"></span></div>`}</td>
+      <td><div><input type="text" id="qs_sd_${i}" placeholder="?"><span class="correct-hint" id="qs_h_sd_${i}"></span></div></td>
+      <td><div><input type="text" id="qs_ss_${i}" placeholder="?"><span class="correct-hint" id="qs_h_ss_${i}"></span></div></td>
+      <td><div><input type="text" id="qs_se_${i}" placeholder="?"><span class="correct-hint" id="qs_h_se_${i}"></span></div></td>
+      <td><div><input type="text" id="qs_wq_${i}" placeholder="?"><span class="correct-hint" id="qs_h_wq_${i}"></span></div></td>
+      <td><div><input type="text" id="qs_tis_${i}" placeholder="?"><span class="correct-hint" id="qs_h_tis_${i}"></span></div></td>
+    </tr>`;
+  });
+}
+function qsRenderResults(){
+  const RL=(text,tip)=>`<label><span class="tip-wrap">${text} <span class="tip" data-tip="${tip}">?</span></span></label>`;
+  document.getElementById('qs-resultsGrid').innerHTML=`
+    <div class="res-item">${RL('1. Ortalama kuyrukta bekleme süresi (dk)','Toplam Bekleme ÷ Müşteri Sayısı')}<input type="text" id="qs_r_avgWq" placeholder="0.00"><span class="correct-hint" id="qs_h_avgWq"></span></div>
+    <div class="res-item">${RL('2. Ortalama sistemde kalma süresi (dk)','Toplam Sistemde Kalma ÷ Müşteri Sayısı')}<input type="text" id="qs_r_avgTis" placeholder="0.00"><span class="correct-hint" id="qs_h_avgTis"></span></div>
+    <div class="res-item">${RL('3. Maksimum kuyruk bekleme süresi (dk)','Kuyrukta Bekleme sütununun en büyük değeri')}<input type="text" id="qs_r_maxWq" placeholder="0"><span class="correct-hint" id="qs_h_maxWq"></span></div>
+    <div class="res-item">${RL('4. Veznenin toplam boş kalma süresi (dk)','Varış Zamanı − Önceki Servis Bitişi (yalnızca > 0 olanları topla)')}<input type="text" id="qs_r_idle" placeholder="0"><span class="correct-hint" id="qs_h_idle"></span></div>
+    <div class="res-item" style="grid-column:span 2;">${RL('5. Vezne kullanım oranı (%)','Toplam Servis Süresi ÷ Son Servis Bitiş Zamanı × 100')}<input type="text" id="qs_r_util" placeholder="0.00"><span class="correct-hint" id="qs_h_util"></span></div>`;
+}
+
+function qsNear(a,b,tol){const av=parseFloat(String(a).replace(',','.')),bv=parseFloat(String(b).replace(',','.'));if(isNaN(av)||isNaN(bv))return false;return Math.abs(av-bv)<=tol;}
+function qsChk(iid,hid,correct,tol){
+  const el=document.getElementById(iid), hl=document.getElementById(hid);
+  if(!el||el.disabled) return true;
+  const ok=qsNear(el.value,correct,tol);
+  el.classList.remove('correct','wrong'); el.classList.add(ok?'correct':'wrong');
+  if(hl){hl.textContent=ok?`✗ Doğru: ${correct}`:'';}
+  // fix: show hint when wrong
+  if(hl){hl.textContent=ok?'':(`✗ Doğru: ${correct}`);}
+  return ok;
+}
+function qsCheckAnswers(){
+  const q=QS; let ok=0,tot=0;
+  for(let i=0;i<q.nC;i++){
+    const c=q.customers[i];
+    if(i>0){tot++;if(qsChk(`qs_ia_${i}`,`qs_h_ia_${i}`,c.ia,0))ok++;tot++;if(qsChk(`qs_at_${i}`,`qs_h_at_${i}`,c.at,0))ok++;}
+    tot++;if(qsChk(`qs_sd_${i}`,`qs_h_sd_${i}`,c.sd,0))ok++;
+    tot++;if(qsChk(`qs_ss_${i}`,`qs_h_ss_${i}`,c.ss,0))ok++;
+    tot++;if(qsChk(`qs_se_${i}`,`qs_h_se_${i}`,c.se,0))ok++;
+    tot++;if(qsChk(`qs_wq_${i}`,`qs_h_wq_${i}`,c.wq,0))ok++;
+    tot++;if(qsChk(`qs_tis_${i}`,`qs_h_tis_${i}`,c.tis,0))ok++;
+  }
+  const res=[
+    {id:'qs_r_avgWq',hid:'qs_h_avgWq',val:q.avgWq.toFixed(2),tol:0.15},
+    {id:'qs_r_avgTis',hid:'qs_h_avgTis',val:q.avgTis.toFixed(2),tol:0.15},
+    {id:'qs_r_maxWq',hid:'qs_h_maxWq',val:q.maxWq,tol:0},
+    {id:'qs_r_idle',hid:'qs_h_idle',val:q.totalIdle,tol:0},
+    {id:'qs_r_util',hid:'qs_h_util',val:q.util.toFixed(2),tol:0.6},
+  ];
+  for(const r of res){tot++;if(qsChk(r.id,r.hid,r.val,r.tol))ok++;}
+  const pct=Math.round(ok/tot*100);
+  const banner=document.getElementById('qs-scoreBanner');
+  banner.style.display='block';
+  const cls=pct>=80?'score-good':pct>=50?'score-mid':'score-bad';
+  banner.className=`score-banner ${cls}`;
+  banner.textContent=`${pct>=80?'🎉':pct>=50?'👍':'📚'}  ${ok}/${tot} doğru (${pct}%)  ${pct>=80?'— Harika!':pct>=50?'— Biraz daha çalış.':'— Detaylı çözümü incele!'}`;
+  banner.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function qsShowSolution(){
+  const q=QS; const card=document.getElementById('qs-solutionCard'); card.style.display='block';
+  let html='';
+  for(let i=0;i<q.nC;i++){
+    const c=q.customers[i], prev=i>0?q.customers[i-1]:null;
+    let t=`<b>${c.no}. Müşteri</b><br>`;
+    if(i===0){t+=`İlk müşteri olduğu için <span class="code">Varış Zamanı = 0</span> dk kabul edilir.<br>Servis RN = <b>${c.rnS}</b> → Servis Süresi = <b>${c.sd} dk</b>.<br>Vezne boş → <span class="code">Servis Başlangıç = max(0,0) = 0 dk</span>.<br>Bitiş = 0+${c.sd} = <b>${c.se} dk</b>. Bekleme = <b>0 dk</b>. Sistemde = <b>${c.tis} dk</b>.`;}
+    else{
+      t+=`Varış RN = <b>${c.rnA}</b> → Varışlararası Süre = <b>${c.ia} dk</b>.<br>`;
+      t+=`Varış Zamanı = ${prev.at}+${c.ia} = <b>${c.at} dk</b>.<br>`;
+      t+=`Servis RN = <b>${c.rnS}</b> → Servis Süresi = <b>${c.sd} dk</b>.<br>`;
+      if(c.at>=prev.se){
+        t+=`${c.no}. müşteri <b>${c.at}. dk</b>'de gelmiştir. Önceki servis <b>${prev.se}. dk</b>'de bitmiştir, vezne boşta beklemektedir. Müşteri hemen alınır.`;
+        if(c.idle>0) t+=` Vezne <b>${c.idle} dk</b> boş kalmıştır.`;
+        t+=`<br><span class="code">Servis Başlangıç = max(${c.at},${prev.se}) = ${c.ss} dk</span>.<br>`;
+      }else{
+        t+=`${c.no}. müşteri <b>${c.at}. dk</b>'de gelmiştir. Önceki servis <b>${prev.se}. dk</b>'de bitecek, müşteri <b>${c.wq} dk</b> beklemek zorundadır.<br>`;
+        t+=`<span class="code">Servis Başlangıç = max(${c.at},${prev.se}) = ${c.ss} dk</span>.<br>`;
+      }
+      t+=`Servis Bitiş = ${c.ss}+${c.sd} = <b>${c.se} dk</b>. Kuyrukta Bekleme = ${c.ss}−${c.at} = <b>${c.wq} dk</b>. Sistemde = ${c.se}−${c.at} = <b>${c.tis} dk</b>.`;
+    }
+    html+=`<div class="sol-step">${t}</div>`;
+  }
+  const wqL=q.customers.map(c=>c.wq).join('+'), tisL=q.customers.map(c=>c.tis).join('+');
+  const idleL=q.customers.filter(c=>c.idle>0).map(c=>c.idle).join('+')||'0';
+  const sdL=q.customers.map(c=>c.sd).join('+');
+  html+=`<div class="sol-summary"><b style="color:#276749;font-size:0.92rem;">📊 Özet</b><br><br>
+    <b>Ort. Kuyruk Bekleme:</b> (${wqL}) ÷ ${q.nC} = <b>${q.avgWq.toFixed(2)} dk</b><br>
+    <b>Ort. Sistemde Kalma:</b> (${tisL}) ÷ ${q.nC} = <b>${q.avgTis.toFixed(2)} dk</b><br>
+    <b>Maks. Kuyruk Bekleme:</b> <b>${q.maxWq} dk</b><br>
+    <b>Toplam Boş Kalma:</b> ${idleL} = <b>${q.totalIdle} dk</b><br>
+    <b>Toplam Servis:</b> ${sdL} = <b>${q.totalSd} dk</b> &nbsp;|&nbsp; <b>Simülasyon Bitiş:</b> <b>${q.simEnd} dk</b><br>
+    <b>Kullanım Oranı:</b> ${q.totalSd}÷${q.simEnd}×100 = <b>${q.util.toFixed(2)}%</b>
+  </div>`;
+  document.getElementById('qs-solutionSteps').innerHTML=html;
+  card.scrollIntoView({behavior:'smooth',block:'start'});
+}
+function qsNewQuestion(){
+  QS=qsGenerateQ();
+  document.getElementById('qs-qTitle').textContent=`${QS.sc.name} — Tek Kanallı Kuyruk Sistemi Simülasyonu`;
+  document.getElementById('qs-qDesc').textContent=QS.sc.desc(QS.nC);
+  qsRenderArrivalDist(QS.aDist); qsRenderServiceDist(QS.sDist);
+  qsRenderRNG(QS); qsRenderSimTable(QS); qsRenderResults();
+  document.getElementById('qs-solutionCard').style.display='none';
+  document.getElementById('qs-solutionSteps').innerHTML='';
+  document.getElementById('qs-scoreBanner').style.display='none';
+}
+
+// Başlangıç
+qsNewQuestion();
 </script>
+<script src="https://cdn.jsdelivr.net/pyodide/v0.25.1/full/pyodide.js"></script>
 </body>
 </html>
